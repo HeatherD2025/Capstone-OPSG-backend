@@ -9,6 +9,8 @@
 - [Tor Skaarva](https://github.com/Tor-Skaarva)
 - [Ryan Cutrone](https://github.com/equanimityspace)
 
+- link to frontend repository: https://github.com/HeatherD2025/Capstone-OPSG-frontend
+
 A web application used by a small company to attract potential clients. It also securely integrates with QuickBooks to provide users with at-a-glance financial insights and outstanding balance information. Built as a final project for Fullstack Academy.
 
 ## Key Features
