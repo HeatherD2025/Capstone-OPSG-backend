@@ -6,7 +6,9 @@
     "intuit": "nodemon ./src/services/quickbooks/qbAuth.js",
     "server": "nodemon index.js",
     "seed": "node ./prisma/seed.cjs",
-    "debug": "nodemon --inspect index.js"
+    "debug": "nodemon --inspect index.js",
+    "build": "npx prisma geerate",
+    "start": "node index.js",
   },
   "keywords": [],
   "author": "",
