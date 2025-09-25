@@ -1,6 +1,4 @@
-
-
-export default adminAccess = (req, res, next) => {
+const adminAccess = (req, res, next) => {
   if (req.user && req.user.isAdmin === true) {
     next();
   } else {
@@ -10,3 +8,5 @@ export default adminAccess = (req, res, next) => {
     });
   }
 };
+
+export default adminAccess;
