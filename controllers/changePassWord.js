@@ -1,5 +1,5 @@
 import prisma from '../common/client.js';
-import bcrypt from 'bycrypt';
+import bcrypt from 'bcrypt';
 
 export async function changePassword(req, res, next) {
   try {

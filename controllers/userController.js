@@ -1,5 +1,5 @@
 import prisma from '../common/client.js';
-import bcrypt from 'bycrypt';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 import { isLoggedIn } from '../middleware/isLoggedIn.js';
