@@ -1,10 +1,10 @@
 import express from 'express';
-import prisma from '../../common/client';
+import prisma from '../../common/client.js';
 import OAuthClient from 'intuit-oauth';
 import 'dotenv/config';
 
 // create oathClient
-const oauthClient = new OAuthClient({
+export const oauthClient = new OAuthClient({
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
   environment: process.env.ENVIRONMENT,

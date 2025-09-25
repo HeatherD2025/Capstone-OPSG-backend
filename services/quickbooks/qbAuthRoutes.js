@@ -6,7 +6,7 @@ import {
   account,
   disconnect,
   customerBalance,
-} from "./qbAuth";
+} from "./qbAuth.js";
 
 const router = express.Router();
 

@@ -1,7 +1,7 @@
 import express from 'express';
-import { isLoggedIn } from '../middleware/isLoggedIn';
-import adminAccess from '../middleware/adminAccess';
-import { changePassword } from '../controllers/changePassWord';
+import { isLoggedIn } from '../middleware/isLoggedIn.js';
+import adminAccess from '../middleware/adminAccess.js';
+import { changePassword } from '../controllers/changePassWord.js';
 import {
   register,
   login,
@@ -9,7 +9,7 @@ import {
   getUserById,
   deleteUserById,
   updateUserProfile,
-} from "../controllers/authController";
+} from "../controllers/authController.js";
 
 const router = express.Router();
 

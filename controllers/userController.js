@@ -1,8 +1,8 @@
-import prisma from '../common/client';
+import prisma from '../common/client.js';
 import bcrypt from 'bycrypt';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
-import { isLoggedIn } from '../middleware/isLoggedIn';
+import { isLoggedIn } from '../middleware/isLoggedIn.js';
 
 export const getAllUsers = async (req, res, next) => {
   try {

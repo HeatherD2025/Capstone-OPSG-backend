@@ -1,4 +1,4 @@
-import prisma from '../common/client';
+import prisma from '../common/client.js';
 import bcrypt from 'bycrypt';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
