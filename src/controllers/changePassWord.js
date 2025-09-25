@@ -1,7 +1,7 @@
-const bcrypt = require("bcrypt");
-const { prisma } = require("../common/client");
+import prisma from '../common/client';
+import bcrypt from 'bycrypt';
 
-async function changePassword(req, res, next) {
+export async function changePassword(req, res, next) {
   try {
     console.log("→ changePassword.params:", req.params);
     console.log("→ changePassword.body:  ", req.body);
@@ -71,4 +71,3 @@ async function changePassword(req, res, next) {
   }
 }
 
-module.exports = { changePassword };

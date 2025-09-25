@@ -1,8 +1,10 @@
-const { router, bcrypt, prisma, jwt } = require("../common/client");
-require("dotenv").config();
-const { isLoggedIn } = require("../middleware/isLoggedIn");
+import prisma from '../common/client';
+import bcrypt from 'bycrypt';
+import jwt from 'jsonwebtoken';
+import 'dotenv/config';
+import { isLoggedIn } from '../middleware/isLoggedIn';
 
-const getAllUsers = async (req, res, next) => {
+export const getAllUsers = async (req, res, next) => {
   try {
     const allUsers = await prisma.user.findMany();
     if (allUsers.length > 0) {
@@ -19,7 +21,7 @@ const getAllUsers = async (req, res, next) => {
   }
 };
 
-const getUserById = async (req, res) => {
+export const getUserById = async (req, res) => {
   const userId = req.params.userId;
   try {
     const getUser = await prisma.user.findUnique({
@@ -45,7 +47,7 @@ const getUserById = async (req, res) => {
   }
 };
 
-const deleteUserById = async (req, res, next) => {
+export const deleteUserById = async (req, res, next) => {
   const userId = req.params.userId;
   try {
     const deleteUser = await prisma.user.delete({
@@ -64,7 +66,7 @@ const deleteUserById = async (req, res, next) => {
   }
 };
 
-const updateUserProfile = async (req, res, next) => {
+export const updateUserProfile = async (req, res, next) => {
   try {
     const { userId } = req.params;
     if (!userId) {
@@ -120,11 +122,4 @@ const updateUserProfile = async (req, res, next) => {
       message: "Internal server error",
     });
   }
-};
-
-module.exports = {
-  getAllUsers,
-  getUserById,
-  deleteUserById,
-  updateUserProfile,
 };

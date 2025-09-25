@@ -1,10 +1,9 @@
-const { jwt } = require("../common/client"); // Import the jwt module from common/common.js
-require("dotenv").config(); // Load environment variables from .env file
+import jwt from 'jsonwebtoken';
+import 'dotenv/config';
 
-async function isLoggedIn(req, res, next) {
-  // Check if the request has a valid JWT token
+export async function isLoggedIn(req, res, next) {
   try {
-    const token = req.headers.authorization?.replace("Bearer ", ""); // Extract the token from the Authorization header
+    const token = req.headers.authorization?.replace("Bearer ", ""); // Extract the token
 
     if (!token) {
       return res
@@ -21,4 +20,3 @@ async function isLoggedIn(req, res, next) {
   }
 }
 
-module.exports = { isLoggedIn };

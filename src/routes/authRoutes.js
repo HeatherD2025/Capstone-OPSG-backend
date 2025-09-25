@@ -1,17 +1,17 @@
-const express = require("express");
-const { isLoggedIn } = require("../middleware/isLoggedIn");
-const router = express.Router();
-const {
+import express from 'express';
+import { isLoggedIn } from '../middleware/isLoggedIn';
+import adminAccess from '../middleware/adminAccess';
+import { changePassword } from '../controllers/changePassWord';
+import {
   register,
   login,
-  adminAccess,
   getAllUsers,
   getUserById,
   deleteUserById,
   updateUserProfile,
-} = require("../controllers/authController");
+} from "../controllers/authController";
 
-const { changePassword } = require("../controllers/changePassWord");
+const router = express.Router();
 
 function middleware(req, res, next) {
   if (req.headers?.authorization?.split(" ")[1]) {
@@ -36,4 +36,4 @@ router.patch("/user/:userId", isLoggedIn, changePassword);
 router.delete("/deleteUser/:userId", isLoggedIn, deleteUserById);
 router.put("/updateUserProfile/:userId", isLoggedIn, updateUserProfile);
 
-module.exports = router;
+export default router;

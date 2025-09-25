@@ -5,7 +5,7 @@ import 'dotenv/config';
 
 const { isLoggedIn } = require("../middleware/isLoggedIn.js");
 
-const login = async (req, res, next) => {
+export const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
@@ -55,7 +55,7 @@ const login = async (req, res, next) => {
   }
 };
 
-const register = async (req, res) => {
+export const register = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
@@ -79,7 +79,7 @@ const register = async (req, res) => {
   res.json({ user: userWithoutPassword, token });
 };
 
-const getAllUsers = async (req, res, next) => {
+export const getAllUsers = async (req, res, next) => {
   try {
     const allUsers = await prisma.user.findMany();
     if (allUsers.length > 0) {
@@ -96,7 +96,7 @@ const getAllUsers = async (req, res, next) => {
   }
 };
 
-const getUserById = async (req, res) => {
+export const getUserById = async (req, res) => {
   const userId = req.params.userId;
   try {
     const getUser = await prisma.user.findUnique({
@@ -122,7 +122,7 @@ const getUserById = async (req, res) => {
   }
 };
 
-const deleteUserById = async (req, res, next) => {
+export const deleteUserById = async (req, res, next) => {
   const userId = req.params.userId;
   try {
     const deleteUser = await prisma.user.delete({
@@ -141,7 +141,7 @@ const deleteUserById = async (req, res, next) => {
   }
 };
 
-const updateUserProfile = async (req, res, next) => {
+export const updateUserProfile = async (req, res, next) => {
   try {
     const { userId } = req.params;
     if (!userId) {
@@ -197,14 +197,4 @@ const updateUserProfile = async (req, res, next) => {
       message: "Internal server error",
     });
   }
-};
-
-module.exports = {
-  login,
-  register,
-  getAllUsers,
-  getUserById,
-  deleteUserById,
-  updateUserProfile,
-  adminAccess,
 };

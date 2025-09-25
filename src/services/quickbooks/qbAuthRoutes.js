@@ -1,16 +1,17 @@
-const router = require("express").Router();
-const { prisma } = require("../../common/common");
-const {
+import express from 'express';
+import {
   oauthClient,
   connect,
   qbToken,
   account,
   disconnect,
   customerBalance,
-} = require("./qbAuth");
+} from "./qbAuth";
+
+const router = express.Router();
 
 // refresh access token upon connecting to account
-async function middleware(req, res, next) {
+export async function middleware(req, res, next) {
   try {
     console.log("attempting to refresh access token...");
 
@@ -35,4 +36,4 @@ router.get("/disconnect", disconnect);
 router.get("/account", middleware, account);
 router.get("/company/:id", middleware, customerBalance);
 
-module.exports = router;
+export default router;

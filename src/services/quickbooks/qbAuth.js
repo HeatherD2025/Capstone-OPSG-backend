@@ -1,9 +1,7 @@
-require("dotenv").config();
-const { prisma } = require("../../common/common");
-const { app } = require("../../common/common");
-const express = require("express");
-app.use(express.json());
-const OAuthClient = require("intuit-oauth");
+import express from 'express';
+import prisma from '../../common/client';
+import OAuthClient from 'intuit-oauth';
+import 'dotenv/config';
 
 // create oathClient
 const oauthClient = new OAuthClient({
@@ -14,7 +12,7 @@ const oauthClient = new OAuthClient({
 });
 
 // auth connection
-const connect = async (req, res) => {
+export const connect = async (req, res) => {
   try {
     const authUri = oauthClient.authorizeUri({
       scope: [OAuthClient.scopes.Accounting, OAuthClient.scopes.Payment],
@@ -26,7 +24,7 @@ const connect = async (req, res) => {
   }
 };
 
-const qbToken = async (req, res) => {
+export const qbToken = async (req, res) => {
   const parseRedirect = req.url;
   try {
     const authResponse = await oauthClient.createToken(parseRedirect);
@@ -47,7 +45,7 @@ const qbToken = async (req, res) => {
 };
 
 // example query to get account from sandbox company
-const account = async (req, res) => {
+export const account = async (req, res) => {
   try {
     const response = await oauthClient.makeApiCall({
       url: `https://sandbox-quickbooks.api.intuit.com/v3/company/9341454546075566/query?query=select * from Account&minorversion=75`,
@@ -63,7 +61,7 @@ const account = async (req, res) => {
 };
 
 // revoke access token
-const disconnect = async (req, res) => {
+export const disconnect = async (req, res) => {
   try {
     const accessToken = await oauthClient.getToken();
     console.log(accessToken);
@@ -76,7 +74,7 @@ const disconnect = async (req, res) => {
 };
 
 // get customer balance
-const customerBalance = async (req, res) => {
+export const customerBalance = async (req, res) => {
   try {
     const { id } = req.params; // company URL should be as follows: /company/companyID
     const { response } = await oauthClient.makeApiCall({
@@ -93,13 +91,3 @@ const customerBalance = async (req, res) => {
   }
 };
 
-//
-
-module.exports = {
-  oauthClient,
-  connect,
-  qbToken,
-  account,
-  disconnect,
-  customerBalance,
-};
