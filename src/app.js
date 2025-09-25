@@ -3,7 +3,7 @@ import path from "path";
 import cors from "cors";
 import morgan from "morgan";
 
-import authRoutes from "./routes/auth.js";
+import authRoutes from './routes/authRoutes.js'
 import qbAuthRoutes from "./services/quickbooks/qbAuthRoutes.js";
 import { isLoggedIn } from "./middleware/isLoggedIn.js";
 import { adminAccess } from "./controllers/authController.js";
