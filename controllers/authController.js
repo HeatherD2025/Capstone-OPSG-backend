@@ -2,8 +2,7 @@ import prisma from '../common/client.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
-
-const { isLoggedIn } = require("../middleware/isLoggedIn.js");
+import { isLoggedIn } from '../middleware/isLoggedIn.js';
 
 export const login = async (req, res, next) => {
   const { email, password } = req.body;
