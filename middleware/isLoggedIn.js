@@ -18,5 +18,5 @@ export async function isLoggedIn(req, res, next) {
     console.error("Error verifying token:", error); // Log the error for debugging
     return res.status(401).json({ error: "Invalid token." }); // Respond with an error if the token is invalid
   }
-}
+};
 

@@ -1,8 +1,8 @@
-import prisma from '../src/common/client.js';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import 'dotenv/config';
-import { faker } from '@faker-js/faker';
+import prisma from "../common/client.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import "dotenv/config";
+import { faker } from "@faker-js/faker";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const WEB_TOKEN = process.env.WEB_TOKEN || "1234";
@@ -18,7 +18,7 @@ async function seedRefreshToken() {
       refreshToken: "placeholder",
     },
   });
-};
+}
 
 async function seed() {
   await prisma.user.deleteMany();
@@ -107,11 +107,11 @@ async function seed() {
   const adminToken = jwt.sign(
     { id: createAdmin.id, email: createAdmin.email, isAdmin: true },
     WEB_TOKEN,
-    { expiresIn: '1d' }
+    { expiresIn: "1d" }
   );
 
-  console.log('Admin user created:', createAdmin.email);
-  console.log('Admin token:', adminToken);
+  console.log("Admin user created:", createAdmin.email);
+  console.log("Admin token:", adminToken);
 
   // log tokens
   seededTokens.forEach(({ email, token }) => {
@@ -121,7 +121,8 @@ async function seed() {
 }
 
 await seedRefreshToken();
-await seed().catch((e) => {
+await seed()
+  .catch((e) => {
     console.error(e);
     process.exit(1);
   })
