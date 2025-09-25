@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { prisma } = require("../common/common");
+const { prisma } = require("../common/client");
 
 async function changePassword(req, res, next) {
   try {

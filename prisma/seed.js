@@ -1,46 +1,26 @@
-const { prisma, bcrypt } = require("../src/common/common");
-require("dotenv").config();
-const jwt = require("jsonwebtoken");
+import prisma from '../src/common/client.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import 'dotenv/config';
+import { faker } from '@faker-js/faker';
+
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const WEB_TOKEN = process.env.WEB_TOKEN || "1234";
-const { faker } = require("@faker-js/faker");
 
-async function main() {
-  const adminUser = await prisma.user.create({
-    data: {
-      firstName: "example",
-      lastName: "exampleTwo",
-      email: "admin@example.com",
-      password: "hashed_admin_password", // Use bcrypt or a similar library for hashing
-      isAdmin: true,
-    },
-  });
-
-  console.log("Admin user created:", adminUser);
-}
-
-main()
-  .catch((e) => {
-    console.error(e);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+console.log("WEB_TOKEN =", process.env.WEB_TOKEN);
 
 // seed a single refresh token
-const seedRefreshToken = async () => {
+async function seedRefreshToken() {
   // delete old seeded tokens
   await prisma.token.deleteMany();
-
   await prisma.token.create({
     data: {
       refreshToken: "placeholder",
     },
   });
 };
-seedRefreshToken();
 
 async function seed() {
-  // Clear database
   await prisma.user.deleteMany();
   await prisma.company.deleteMany();
 
@@ -65,12 +45,13 @@ async function seed() {
     companies.push(company);
   }
 
-  // Create users for all the companies
+  // users for companies
   for (const company of companies) {
     const numEmployees = faker.number.int({ min: 1, max: 10 });
     for (let i = 0; i < numEmployees; i++) {
       const password = faker.internet.password();
       const hashedPassword = await bcrypt.hash(password, 10);
+
       const user = await prisma.user.create({
         data: {
           firstName: faker.person.firstName(),
@@ -82,7 +63,7 @@ async function seed() {
           companyId: company.id,
         },
       });
-      //Token
+
       const token = jwt.sign({ id: user.id, email: user.email }, WEB_TOKEN, {
         expiresIn: "1d",
       });
@@ -104,49 +85,43 @@ async function seed() {
         dateUpdated: faker.date.recent(),
       },
     });
-    //Token
+
     const token = jwt.sign({ id: user.id, email: user.email }, WEB_TOKEN, {
       expiresIn: "1d",
     });
     seededTokens.push({ email: user.email, token });
   }
 
-  //create admin role for Cathy and Shelle
-  const cathyPassword = "cathytest";
-  const hashedCathyPassword = await bcrypt.hash(cathyPassword, 10);
-  const cathyUser = await prisma.user.create({
+  //create admin role for myself
+  const hashedAdminPassword = bcrypt.hash(ADMIN_PASSWORD, 10);
+  const createAdmin = await prisma.user.create({
     data: {
-      firstName: "Cathy",
-      lastName: "Cutrone",
-      email: "ccutrone@onpointsolutionsgroup.org",
-      password: hashedCathyPassword,
+      firstName: "Heather",
+      lastName: "DeLiso",
+      email: "heatherdeliso@gmail.com",
+      password: hashedAdminPassword,
       isAdmin: true,
     },
   });
-  console.log("Cathy Admin user created:");
 
-  const shellePassword = "shelletest";
-  const hashedShellePassword = await bcrypt.hash(shellePassword, 10);
-  const shelleUser = await prisma.user.create({
-    data: {
-      firstName: "Shelle",
-      lastName: "Zachary",
-      email: "szachary@onpointsolutionsgroup.org",
-      password: hashedShellePassword,
-      isAdmin: true,
-    },
-  });
-  console.log("Shelle Admin user created:");
+  const adminToken = jwt.sign(
+    { id: createAdmin.id, email: createAdmin.email, isAdmin: true },
+    WEB_TOKEN,
+    { expiresIn: '1d' }
+  );
 
-  // log tokens (Might want to copy and paste this somewhere for testing)
+  console.log('Admin user created:', createAdmin.email);
+  console.log('Admin token:', adminToken);
+
+  // log tokens
   seededTokens.forEach(({ email, token }) => {
-    console.log(`${email}:           ${token}`);
-    console.log(" Database seeded");
+    console.log(`${email}: ${token}`);
   });
+  console.log(" Database seeded");
 }
 
-seed()
-  .catch((e) => {
+await seedRefreshToken();
+await seed().catch((e) => {
     console.error(e);
     process.exit(1);
   })

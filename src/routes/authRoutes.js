@@ -23,13 +23,14 @@ function middleware(req, res, next) {
 
 // NEW ADMIN/USER CONTROLS
 router.get('/adminPage', [middleware, isLoggedIn, adminAccess]);
+router.get("/getAllUsers", isLoggedIn, adminAccess, getAllUsers);
 
 router.get('/user/:userId', [middleware, isLoggedIn])
 
 router.post("/login", login);
 router.post("/register", register);
 // router.get("/me", middleware, getMe);
-router.get("/getAllUsers", isLoggedIn, getAllUsers);
+
 router.get("/getUser/:userId", isLoggedIn, getUserById);
 router.patch("/user/:userId", isLoggedIn, changePassword);
 router.delete("/deleteUser/:userId", isLoggedIn, deleteUserById);

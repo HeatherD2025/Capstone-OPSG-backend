@@ -1,83 +1,6 @@
-import prisma from '../common/client';
-import bcrypt from 'bycrypt';
-import jwt from 'jsonwebtoken';
-import 'dotenv/config';
-
-const { isLoggedIn } = require("../middleware/isLoggedIn.js");
-
-const login = async (req, res, next) => {
-  const { email, password } = req.body;
-
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email: email },
-    });
-
-    if (!user) {
-      console.log("User not found"); // Log if user is not found
-      return res.status(404).json({
-        statusCode: 404,
-        message: "User not found",
-      });
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    console.log("isPasswordValid", isPasswordValid); // Log the password validation result
-
-    if (!isPasswordValid) {
-      console.log("Invalid password"); // Log if password is invalid
-      return res.status(401).json({
-        statusCode: 401,
-        message: "Login denied",
-      });
-    }
-
-    const token = jwt.sign(
-      { id: user.id, email: user.email, isAdmin: user.isAdmin },
-      process.env.WEB_TOKEN
-    );
-    console.log("Token created successfully");
-
-    // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
-
-    res.status(200).json({
-      user: userWithoutPassword,
-      token,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      statusCode: 500,
-      message: "Server error",
-    });
-  }
-};
-
-const register = async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-  const registerUser = await prisma.user.create({
-    data: {
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-    },
-  });
-
-  const token = jwt.sign(
-    { id: registerUser.id, email, isAdmin: registerUser.isAdmin },
-    process.env.WEB_TOKEN,
-    { expiresIn: "24h" }
-  );
-
-  const { password: _, ...userWithoutPassword } = registerUser;
-
-  res.json({ user: userWithoutPassword, token });
-};
+const { router, bcrypt, prisma, jwt } = require("../common/client");
+require("dotenv").config();
+const { isLoggedIn } = require("../middleware/isLoggedIn");
 
 const getAllUsers = async (req, res, next) => {
   try {
@@ -200,11 +123,8 @@ const updateUserProfile = async (req, res, next) => {
 };
 
 module.exports = {
-  login,
-  register,
   getAllUsers,
   getUserById,
   deleteUserById,
   updateUserProfile,
-  adminAccess,
 };

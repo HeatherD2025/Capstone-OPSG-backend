@@ -1,4 +1,4 @@
-const { jwt } = require("../common/common"); // Import the jwt module from common/common.js
+const { jwt } = require("../common/client"); // Import the jwt module from common/common.js
 require("dotenv").config(); // Load environment variables from .env file
 
 async function isLoggedIn(req, res, next) {

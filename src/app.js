@@ -1,11 +1,13 @@
-const express = require("express");
+import express from 'express';
+import path from 'path';
+import cors from 'cors';
+import morgan from 'morgan';
+
 const app = express();
-const path = require("path");
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-const cors = require("cors");
 app.use(cors());
-const morgan = require("morgan");
 app.use(morgan("dev"));
 
 // Middleware to serve static files from the client/dist director
