@@ -1,7 +1,12 @@
-import express from 'express';
-import path from 'path';
-import cors from 'cors';
-import morgan from 'morgan';
+import express from "express";
+import path from "path";
+import cors from "cors";
+import morgan from "morgan";
+
+import authRoutes from "./routes/auth.js";
+import qbAuthRoutes from "./services/quickbooks/qbAuthRoutes.js";
+import { isLoggedIn } from "./middleware/isLoggedIn.js";
+import { adminAccess } from "./controllers/authController.js";
 
 const app = express();
 
@@ -10,17 +15,11 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
 
-// Middleware to serve static files from the client/dist director
-const authRoutes = require("./routes/auth");
-const qbAuthRoutes = require("./services/quickbooks/qbAuthRoutes");
-const { isLoggedIn } = require("./middleware/isLoggedIn");
-const { adminAccess } = require("./controllers/authController");
 console.log("Routes loaded");
 
 // Backend routes
 app.use("/auth", authRoutes);
 app.use("/qbauth", qbAuthRoutes);
-
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -33,4 +32,4 @@ app.use((req, res) => {
   res.status(404).send("Not found.");
 });
 
-module.exports = app;
+export default app;
