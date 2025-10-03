@@ -2,6 +2,10 @@ import express from 'express';
 import prisma from '../../common/client.js';
 import OAuthClient from 'intuit-oauth';
 import 'dotenv/config';
+import { makeQbApiCall } from '../../utils/qbApiHelper.js';
+
+const COMPANY_ID = process.env.QB_COMPANY_ID;
+const API_BASE = process.env.QB_API_BASE || "https://sandbox-quickbooks.api.intuit.com/v3/company";
 
 // create oathClient
 export const oauthClient = new OAuthClient({
@@ -44,19 +48,17 @@ export const qbToken = async (req, res) => {
   }
 };
 
-// example query to get account from sandbox company
+
+// query to get account from sandbox company
 export const account = async (req, res) => {
   try {
-    const response = await oauthClient.makeApiCall({
-      url: `https://sandbox-quickbooks.api.intuit.com/v3/company/9341454546075566/query?query=select * from Account&minorversion=75`,
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    res.status(200).send(response.response.data);
+    const data = await makeQbApiCall(
+      "query?query=select * from Account&minorversion=75"
+    );
+    res.status(200).send(data);
   } catch (e) {
     console.error(e);
+    res.status(500).send("Failed to fetch account info");
   }
 };
 
@@ -76,18 +78,14 @@ export const disconnect = async (req, res) => {
 // get customer balance
 export const customerBalance = async (req, res) => {
   try {
-    const { id } = req.params; // company URL should be as follows: /company/companyID
-    const { response } = await oauthClient.makeApiCall({
-      url: `https://sandbox-quickbooks.api.intuit.com/v3/company/9341454546075566/reports/CustomerBalance?customer=${id}`,
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = response.data.Rows.Row;
-    res.status(200).send(data);
+    const { id } = req.params;
+    const data = await makeQbApiCall(
+      `reports/CustomerBalance?customer=${id}`
+    );
+    res.status(200).send(data.Rows.Row);
   } catch (e) {
     console.error(e);
+    res.status(500).send("Failed to fetch customer balance");
   }
 };
 

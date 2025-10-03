@@ -13,26 +13,19 @@ import {
 
 const router = express.Router();
 
-function middleware(req, res, next) {
-  if (req.headers?.authorization?.split(" ")[1]) {
-    next();
-  } else {
-    res.status(401).send("Please log in again");
-  }
-}
-
 // NEW ADMIN/USER CONTROLS
-router.get('/adminPage', [middleware, isLoggedIn, adminAccess]);
+router.get('/adminPage', [isLoggedIn, adminAccess, (req, res) => {
+  res.status(200).json({ message: "Welcome admin" });
+}]);
 router.get("/getAllUsers", isLoggedIn, adminAccess, getAllUsers);
 
-router.get('/user/:userId', [middleware, isLoggedIn])
+router.get('/user/:userId', [isLoggedIn])
+router.patch("/user/:userId", isLoggedIn, changePassword);
 
 router.post("/login", login);
 router.post("/register", register);
-// router.get("/me", middleware, getMe);
 
 router.get("/getUser/:userId", isLoggedIn, getUserById);
-router.patch("/user/:userId", isLoggedIn, changePassword);
 router.delete("/deleteUser/:userId", isLoggedIn, deleteUserById);
 router.put("/updateUserProfile/:userId", isLoggedIn, updateUserProfile);
 
