@@ -7,7 +7,6 @@ import {
   customerBalance,
 } from "./qbAuth.js";
 import { isLoggedIn } from '../../middleware/isLoggedIn.js';
-import adminAccess from '../../middleware/adminAccess.js';
 import { refreshQbToken } from '../../middleware/quickbooks.js';
 
 const router = express.Router();

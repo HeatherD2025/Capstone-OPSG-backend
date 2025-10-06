@@ -3,45 +3,79 @@ import { oauthClient } from "../routes/qbAuth.js";
 
 export async function refreshQbToken(req, res, next) {
   try {
-    console.log("🔄 Attempting to refresh QuickBooks access token...");
+    console.log("Checking if QuickBooks token is valid...");
 
-    // fetch stored token
     const tokenTable = await prisma.token.findUnique({
       where: { id: 1 },
     });
 
     if (!tokenTable || !tokenTable.refreshToken) {
-      return res.status(401).json({ error: "QuickBooks refresh token not found." });
+      console.warn("No QuickBooks tokens found in database.");
+      return res.status(401).json({ error: "QuickBooks not connected. Please reconnect." });
     }
 
-    // refresh refresh token
-    const authResponse = await oauthClient.refreshUsingToken(tokenTable.refreshToken);
+    // Get expiration info
+    const now = new Date();
+    const expiresAt = tokenTable.expiresAt ? new Date(tokenTable.expiresAt) : null;
+    const isExpired = !expiresAt || expiresAt <= now;
 
-    const newAccessToken = authResponse?.token?.access_token;
-    const newRefreshToken = authResponse?.token?.refresh_token;
+    let newAccessToken = tokenTable.accessToken;
+    let newRefreshToken = tokenTable.refreshToken;
+    let realmId = tokenTable.realmId;
 
-    if (!newAccessToken) {
-      throw new Error("No access token returned from QuickBooks refresh.");
-    }
+    if (isExpired) {
+      console.log("🔁 Refreshing expired QuickBooks access token...");
 
-    // update DB with new refresh token
-    if (newRefreshToken) {
+      // handles exchanging refresh token for new tokens
+      const authResponse = await oauthClient.refreshUsingToken(tokenTable.refreshToken);
+      const tokenData = authResponse?.token;
+
+      newAccessToken = tokenData?.access_token;
+      newRefreshToken = tokenData?.refresh_token || tokenTable.refreshToken;
+      realmId = tokenData?.realmId || tokenTable.realmId;
+
+      if (!newAccessToken) {
+        throw new Error("QuickBooks did not return a new access token.");
+      }
+
+      // new expiry timestamp 55 mins
+      const expiresAtNew = new Date(Date.now() + 55 * 60 * 1000); // 55 min buffer
+
+      // save updated tokens to DB
       await prisma.token.update({
         where: { id: 1 },
-        data: { refreshToken: newRefreshToken },
+        data: {
+          accessToken: newAccessToken,
+          refreshToken: newRefreshToken,
+          realmId,
+          expiresAt: expiresAtNew,
+        },
       });
-      console.log("✅ Updated QuickBooks refresh token in DB");
+
+      console.log("QuickBooks tokens refreshed and stored.");
+    } else {
+      console.log("QuickBooks access token still valid, using existing one.");
     }
 
-    console.log("✅ Refreshed QuickBooks access token successfully");
+    // Attach token data to request for use in subsequent handlers
+    req.qbAccessToken = newAccessToken;
+    req.qbRealmId = realmId;
 
-    next(); // pass control to the next middleware or route
-  } catch (err) {
-    console.error("QuickBooks token refresh error:", err);
+    next();
+  } catch (error) {
+    console.error("QuickBooks token refresh error:", error);
 
-    // clear the stored token to force reconnection
-    await prisma.token.update({ where: { id: 1 }, data: { refreshToken: null } });
+    // Optional: clear bad tokens so the user must reconnect
+    await prisma.token.update({
+      where: { id: 1 },
+      data: {
+        accessToken: null,
+        refreshToken: null,
+        realmId: null,
+        expiresAt: null,
+      },
+    });
 
-    return res.status(500).json({ error: "Failed to refresh QuickBooks token." });
+    return res.status(500).json({ error: "Failed to refresh QuickBooks token. Please reconnect." });
   }
 }

@@ -22,9 +22,9 @@ app.use("/auth", authRoutes);
 app.use("/qbauth", qbAuthRoutes);
 
 // Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).send(err.message || "Internal server error.");
+app.use((error, req, res, next) => {
+  console.error(error.stack);
+  res.status(error.status || 500).send(error.message || "Internal server error.");
 });
 
 // Default to 404 if no other route matched

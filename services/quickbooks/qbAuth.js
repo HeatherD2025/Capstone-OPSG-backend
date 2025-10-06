@@ -1,4 +1,3 @@
-import express from 'express';
 import prisma from '../../common/client.js';
 import OAuthClient from 'intuit-oauth';
 import 'dotenv/config';
@@ -7,7 +6,7 @@ import { makeQbApiCall } from '../../utils/qbApiHelper.js';
 const COMPANY_ID = process.env.QB_COMPANY_ID;
 const API_BASE = process.env.QB_API_BASE || "https://sandbox-quickbooks.api.intuit.com/v3/company";
 
-// create oathClient
+// create OAuth client
 export const oauthClient = new OAuthClient({
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
@@ -15,7 +14,7 @@ export const oauthClient = new OAuthClient({
   redirectUri: process.env.REDIRECT_URL,
 });
 
-// auth connection
+// connect to Quickbooks
 export const connect = async (req, res) => {
   try {
     const authUri = oauthClient.authorizeUri({
@@ -23,31 +22,37 @@ export const connect = async (req, res) => {
       state: "Init",
     });
     res.redirect(authUri);
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error("Quickbooks connection error", error);
+    res.status(500).send("Failed to connect with Quickbooks")
   }
 };
 
+// Quickbooks OAuth callback
 export const qbToken = async (req, res) => {
   const parseRedirect = req.url;
   try {
     const authResponse = await oauthClient.createToken(parseRedirect);
+    const refreshToken = authResponse?.token?.refresh_token;
+
+    if (!refreshToken) {
+      throw new error("No refresh token received from Quickbooks")
+    }
 
     // store refresh token
-    const refreshToken = await prisma.token.update({
+    await prisma.token.upsert({
       where: { id: 1 },
-      data: {
-        refreshToken: authResponse.token.refresh_token,
-      },
+      update: { refreshToken },
+      create: { id: 1, refreshToken },
     });
-    console.log("updated refresh token");
 
+    console.log("Quickbooks refreshed token stored");
     res.redirect("/qbauth/account"); // will redirect here with token
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error("Quickbooks token exchange error", error);
+    res.status(500).send("Failed to exchange Quickbooks token")
   }
 };
-
 
 // query to get account from sandbox company
 export const account = async (req, res) => {
@@ -56,8 +61,8 @@ export const account = async (req, res) => {
       "query?query=select * from Account&minorversion=75"
     );
     res.status(200).send(data);
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error("Error fetching Quickbooks account", error);
     res.status(500).send("Failed to fetch account info");
   }
 };
@@ -65,13 +70,22 @@ export const account = async (req, res) => {
 // revoke access token
 export const disconnect = async (req, res) => {
   try {
-    const accessToken = await oauthClient.getToken();
-    console.log(accessToken);
-    const response = await oauthClient.revoke();
-    // console.log(response);
+    const token = oauthClient.getToken();
+    if (!token) throw new Error("No active Quickbooks token found")
+
+    await oauthClient.revoke();
+    console.log("Quickbooks access sucessfully revoked");
+
+    // clear token from db
+    await prisma.token.update({
+      where: { id: 1 },
+      data: { refreshToken: "" },
+    });
+
     res.redirect("/");
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error("Error disconnecting from Quickbooks", error);
+    res.status(500).send("Failed to disconnect from Quikcbooks");
   }
 };
 
@@ -82,9 +96,9 @@ export const customerBalance = async (req, res) => {
     const data = await makeQbApiCall(
       `reports/CustomerBalance?customer=${id}`
     );
-    res.status(200).send(data.Rows.Row);
-  } catch (e) {
-    console.error(e);
+    res.status(200).send(data?.Rows?.Row || []);
+  } catch (error) {
+    console.error("Error fetching customer balance", error);
     res.status(500).send("Failed to fetch customer balance");
   }
 };
