@@ -3,10 +3,9 @@ import bcrypt from 'bcrypt';
 
 export async function changePassword(req, res, next) {
   try {
-    console.log("→ changePassword.params:", req.params);
-    console.log("→ changePassword.body:  ", req.body);
-    //  Param check
     const { userId } = req.params;
+    const { currentPassword, newPassword, confirmPassword } = req.body || {};
+
     if (!userId) {
       return res.status(400).json({
         statusCode: 400,
@@ -14,8 +13,7 @@ export async function changePassword(req, res, next) {
       });
     }
 
-    //  Body check
-    const { currentPassword, newPassword, confirmPassword } = req.body || {};
+    // check all fields are filled and old passwords match
     if (!currentPassword || !newPassword || !confirmPassword) {
       return res.status(400).json({
         statusCode: 400,
@@ -23,6 +21,7 @@ export async function changePassword(req, res, next) {
           "currentPassword, newPassword, and confirmPassword are all required",
       });
     }
+
     if (newPassword !== confirmPassword) {
       return res.status(400).json({
         statusCode: 400,
@@ -62,12 +61,9 @@ export async function changePassword(req, res, next) {
       statusCode: 200,
       message: "Password changed successfully",
     });
+
   } catch (error) {
-    console.error("Error in changePassword:", error);
-    return res.status(500).json({
-      statusCode: 500,
-      message: "Internal server error",
-    });
+    next(error);
   }
 }
 

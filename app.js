@@ -3,7 +3,8 @@ import path from "path";
 import cors from "cors";
 import morgan from "morgan";
 
-import authRoutes from './routes/authRoutes.js'
+import userRoutes from "./routes/userRoutes.js";
+import adminRoutes from "./routes/authRoutes.js";
 import qbAuthRoutes from "./services/quickbooks/qbAuthRoutes.js";
 import { isLoggedIn } from "./middleware/isLoggedIn.js";
 import adminAccess from "./middleware/adminAccess.js";
@@ -18,7 +19,7 @@ app.use(morgan("dev"));
 console.log("Routes loaded");
 
 // Backend routes
-app.use("/auth", authRoutes);
+app.use("/auth", adminRoutes);
 app.use("/qbauth", qbAuthRoutes);
 
 // Error handling middleware
