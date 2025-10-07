@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import prisma from '../common/client.js';
+import prisma from "../common/client.js";
 
 export const getUserById = async (req, res, next) => {
   try {
@@ -40,7 +40,8 @@ export const updateUserProfile = async (req, res, next) => {
     if (!firstName && !lastName && !email) {
       return res.status(400).json({
         statusCode: 400,
-        message: "At least one of firstName, lastName, or email must be provided",
+        message:
+          "At least one of firstName, lastName, or email must be provided",
       });
     }
 

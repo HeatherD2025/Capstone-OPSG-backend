@@ -4,7 +4,7 @@ import { changePassword } from "../controllers/changePassWord.js";
 import {
   getUserById,
   updateUserProfile,
-} from "../controllers/authController.js";
+} from "../controllers/userController.js";
 
 const router = express.Router();
 
