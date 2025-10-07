@@ -1,5 +1,5 @@
 import prisma from "../common/client.js";
-import { oauthClient } from "../routes/qbAuth.js";
+import { oauthClient } from "../services/qbAuth.js";
 
 export async function refreshQbToken(req, res, next) {
   try {
@@ -11,12 +11,16 @@ export async function refreshQbToken(req, res, next) {
 
     if (!tokenTable || !tokenTable.refreshToken) {
       console.warn("No QuickBooks tokens found in database.");
-      return res.status(401).json({ error: "QuickBooks not connected. Please reconnect." });
+      return res
+        .status(401)
+        .json({ error: "QuickBooks not connected. Please reconnect." });
     }
 
     // Get expiration info
     const now = new Date();
-    const expiresAt = tokenTable.expiresAt ? new Date(tokenTable.expiresAt) : null;
+    const expiresAt = tokenTable.expiresAt
+      ? new Date(tokenTable.expiresAt)
+      : null;
     const isExpired = !expiresAt || expiresAt <= now;
 
     let newAccessToken = tokenTable.accessToken;
@@ -27,7 +31,9 @@ export async function refreshQbToken(req, res, next) {
       console.log("🔁 Refreshing expired QuickBooks access token...");
 
       // handles exchanging refresh token for new tokens
-      const authResponse = await oauthClient.refreshUsingToken(tokenTable.refreshToken);
+      const authResponse = await oauthClient.refreshUsingToken(
+        tokenTable.refreshToken
+      );
       const tokenData = authResponse?.token;
 
       newAccessToken = tokenData?.access_token;
@@ -76,6 +82,8 @@ export async function refreshQbToken(req, res, next) {
       },
     });
 
-    return res.status(500).json({ error: "Failed to refresh QuickBooks token. Please reconnect." });
+    return res
+      .status(500)
+      .json({ error: "Failed to refresh QuickBooks token. Please reconnect." });
   }
 }
