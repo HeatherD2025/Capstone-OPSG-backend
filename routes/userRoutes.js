@@ -9,8 +9,8 @@ import {
 const router = express.Router();
 
 // Authenticated user actions
-router.get("/:userId", isLoggedIn, getUserById);
-router.put("/:userId", isLoggedIn, updateUserProfile);
-router.patch("/:userId/password", isLoggedIn, changePassword);
+router.get("/me", isLoggedIn, getUserById);
+router.put("/me", isLoggedIn, updateUserProfile);
+router.patch("/me/password", isLoggedIn, changePassword);
 
 export default router;

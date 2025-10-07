@@ -5,7 +5,7 @@ import morgan from "morgan";
 
 import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/authRoutes.js";
-import qbAuthRoutes from "./services/quickbooks/qbAuthRoutes.js";
+import qbAuthRoutes from "./services/qbAuthRoutes.js";
 import { isLoggedIn } from "./middleware/isLoggedIn.js";
 import adminAccess from "./middleware/adminAccess.js";
 
@@ -25,7 +25,9 @@ app.use("/qbauth", qbAuthRoutes);
 // Error handling middleware
 app.use((error, req, res, next) => {
   console.error(error.stack);
-  res.status(error.status || 500).send(error.message || "Internal server error.");
+  res
+    .status(error.status || 500)
+    .send(error.message || "Internal server error.");
 });
 
 // Default to 404 if no other route matched

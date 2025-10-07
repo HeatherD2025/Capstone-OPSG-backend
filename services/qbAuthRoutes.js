@@ -1,4 +1,4 @@
-import express from 'express';
+import express from "express";
 import {
   connect,
   qbToken,
@@ -6,8 +6,8 @@ import {
   disconnect,
   customerBalance,
 } from "./qbAuth.js";
-import { isLoggedIn } from '../../middleware/isLoggedIn.js';
-import { refreshQbToken } from '../../middleware/quickbooks.js';
+import { isLoggedIn } from "../middleware/isLoggedIn.js";
+import { refreshQbToken } from "../middleware/quickbooks.js";
 
 const router = express.Router();
 

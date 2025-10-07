@@ -1,10 +1,12 @@
-import prisma from '../../common/client.js';
-import OAuthClient from 'intuit-oauth';
-import 'dotenv/config';
-import { makeQbApiCall } from '../../utils/qbApiHelper.js';
+import prisma from "../common/client.js";
+import OAuthClient from "intuit-oauth";
+import "dotenv/config";
+import { makeQbApiCall } from "../utils/qbApiHelper.js";
 
 const COMPANY_ID = process.env.QB_COMPANY_ID;
-const API_BASE = process.env.QB_API_BASE || "https://sandbox-quickbooks.api.intuit.com/v3/company";
+const API_BASE =
+  process.env.QB_API_BASE ||
+  "https://sandbox-quickbooks.api.intuit.com/v3/company";
 
 // create OAuth client
 export const oauthClient = new OAuthClient({
@@ -24,7 +26,7 @@ export const connect = async (req, res) => {
     res.redirect(authUri);
   } catch (error) {
     console.error("Quickbooks connection error", error);
-    res.status(500).send("Failed to connect with Quickbooks")
+    res.status(500).send("Failed to connect with Quickbooks");
   }
 };
 
@@ -36,7 +38,7 @@ export const qbToken = async (req, res) => {
     const refreshToken = authResponse?.token?.refresh_token;
 
     if (!refreshToken) {
-      throw new error("No refresh token received from Quickbooks")
+      throw new error("No refresh token received from Quickbooks");
     }
 
     // store refresh token
@@ -50,7 +52,7 @@ export const qbToken = async (req, res) => {
     res.redirect("/qbauth/account"); // will redirect here with token
   } catch (error) {
     console.error("Quickbooks token exchange error", error);
-    res.status(500).send("Failed to exchange Quickbooks token")
+    res.status(500).send("Failed to exchange Quickbooks token");
   }
 };
 
@@ -71,7 +73,7 @@ export const account = async (req, res) => {
 export const disconnect = async (req, res) => {
   try {
     const token = oauthClient.getToken();
-    if (!token) throw new Error("No active Quickbooks token found")
+    if (!token) throw new Error("No active Quickbooks token found");
 
     await oauthClient.revoke();
     console.log("Quickbooks access sucessfully revoked");
@@ -93,13 +95,10 @@ export const disconnect = async (req, res) => {
 export const customerBalance = async (req, res) => {
   try {
     const { id } = req.params;
-    const data = await makeQbApiCall(
-      `reports/CustomerBalance?customer=${id}`
-    );
+    const data = await makeQbApiCall(`reports/CustomerBalance?customer=${id}`);
     res.status(200).send(data?.Rows?.Row || []);
   } catch (error) {
     console.error("Error fetching customer balance", error);
     res.status(500).send("Failed to fetch customer balance");
   }
 };
-

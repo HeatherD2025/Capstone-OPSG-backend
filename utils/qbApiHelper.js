@@ -1,5 +1,5 @@
 import prisma from "../common/client.js";
-import { oauthClient } from "../services/quickbooks/qbAuth.js";
+import { oauthClient } from "../services/qbAuth.js";
 import "dotenv/config";
 
 const COMPANY_ID = process.env.QB_COMPANY_ID;

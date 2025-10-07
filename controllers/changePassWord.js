@@ -1,17 +1,10 @@
-import prisma from '../common/client.js';
-import bcrypt from 'bcrypt';
+import prisma from "../common/client.js";
+import bcrypt from "bcrypt";
 
 export async function changePassword(req, res, next) {
   try {
-    const { userId } = req.params;
-    const { currentPassword, newPassword, confirmPassword } = req.body || {};
-
-    if (!userId) {
-      return res.status(400).json({
-        statusCode: 400,
-        message: "User ID is required",
-      });
-    }
+    const userId = req.user.id;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
 
     // check all fields are filled and old passwords match
     if (!currentPassword || !newPassword || !confirmPassword) {
@@ -33,6 +26,7 @@ export async function changePassword(req, res, next) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
+
     if (!user) {
       return res.status(404).json({
         statusCode: 404,
@@ -61,9 +55,7 @@ export async function changePassword(req, res, next) {
       statusCode: 200,
       message: "Password changed successfully",
     });
-
   } catch (error) {
     next(error);
   }
 }
-
