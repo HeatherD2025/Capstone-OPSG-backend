@@ -38,7 +38,7 @@ export const login = async (req, res, next) => {
     const token = jwt.sign(
       { id: user.id, email: user.email, isAdmin: user.isAdmin },
       process.env.WEB_TOKEN,
-      { exporedIn: "24" }
+      { expiresIn: "24" }
     );
 
     // Remove password from response
