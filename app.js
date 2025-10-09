@@ -1,22 +1,21 @@
 import express from "express";
-import path from "path";
 import cors from "cors";
 import morgan from "morgan";
 
-import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/authRoutes.js";
 import qbAuthRoutes from "./services/qbAuthRoutes.js";
-import { isLoggedIn } from "./middleware/isLoggedIn.js";
-import adminAccess from "./middleware/adminAccess.js";
 
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors());
-app.use(morgan("dev"));
 
-console.log("Routes loaded");
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
+
+app.use(morgan("dev"));
 
 // Backend routes
 app.use("/auth", adminRoutes);
