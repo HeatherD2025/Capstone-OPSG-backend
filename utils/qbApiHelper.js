@@ -22,12 +22,14 @@ async function ensureValidToken() {
       console.log("Refreshing Quickbooks before call to API...");
       await oauthClient.refreshUsingToken(tokenRow.refreshToken);
     }
+
+    return tokenRow;
   } catch (error) {
     console.error("Error refreshing Quickbooks token", error);
     throw new Error("Failed to refresh Quickbooks access token");
   }
 }
-const COMPANY_ID = tokenRow.realmId;
+
 /**
  * Makes an API call to QuickBooks, automatically including company ID + base URL.
  * @param {string} endpoint - The path after the company ID, e.g. "query?query=select * from Account&minorversion=75"
@@ -36,7 +38,8 @@ const COMPANY_ID = tokenRow.realmId;
  */
 export const makeQbApiCall = async (endpoint, options = {}) => {
   try {
-    await ensureValidToken();
+    const tokenRow = await ensureValidToken();  // fetch refreshed token
+    const COMPANY_ID = tokenRow.realmId;  // fetch realmId
 
     const response = await oauthClient.makeApiCall({
       url: `${API_BASE}/${COMPANY_ID}/${endpoint}`,
