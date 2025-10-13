@@ -11,9 +11,9 @@ import { refreshQbToken } from "../middleware/quickbooks.js";
 
 const router = express.Router();
 
-router.get("/connect", isLoggedIn, connect);
+router.get("/connect", connect);
 router.get("/callback", qbToken);
-router.get("/disconnect", isLoggedIn, disconnect);
+router.get("/disconnect", disconnect);
 
 router.get("/account", isLoggedIn, refreshQbToken, account);
 router.get("/company/:id", isLoggedIn, refreshQbToken, customerBalance);
