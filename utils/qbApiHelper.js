@@ -3,7 +3,6 @@ import { oauthClient } from "../services/qbAuth.js";
 import "dotenv/config";
 
 // const COMPANY_ID = process.env.QB_COMPANY_ID;
-const COMPANY_ID = tokenRow.realmId;
 const API_BASE =
   process.env.QB_API_BASE ||
   "https://sandbox-quickbooks.api.intuit.com/v3/company";
@@ -28,7 +27,7 @@ async function ensureValidToken() {
     throw new Error("Failed to refresh Quickbooks access token");
   }
 }
-
+const COMPANY_ID = tokenRow.realmId;
 /**
  * Makes an API call to QuickBooks, automatically including company ID + base URL.
  * @param {string} endpoint - The path after the company ID, e.g. "query?query=select * from Account&minorversion=75"
