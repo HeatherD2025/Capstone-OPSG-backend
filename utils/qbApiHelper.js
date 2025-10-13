@@ -2,7 +2,8 @@ import prisma from "../common/client.js";
 import { oauthClient } from "../services/qbAuth.js";
 import "dotenv/config";
 
-const COMPANY_ID = process.env.QB_COMPANY_ID;
+// const COMPANY_ID = process.env.QB_COMPANY_ID;
+const COMPANY_ID = tokenRow.realmId;
 const API_BASE =
   process.env.QB_API_BASE ||
   "https://sandbox-quickbooks.api.intuit.com/v3/company";
