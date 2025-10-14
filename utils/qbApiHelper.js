@@ -9,8 +9,6 @@ import "dotenv/config";
 const API_BASE = (process.env.QB_API_BASE || "https://sandbox-quickbooks.api.intuit.com/v3/company")
   .replace(/\/+$/, ""); // strip trailing slashes
 
-const COMPANY_ID = process.env.QB_COMPANY_ID;
-
 
 // before making API call, check if QB has a valid access token
 async function ensureValidToken() {
@@ -35,9 +33,6 @@ async function ensureValidToken() {
   }
 }
 
-const cleanEndpoint = endpoint.replace(/^\/+/, ""); // strip any leading slash
-const url = `${API_BASE}/${COMPANY_ID}/${cleanEndpoint}`;
-console.log("QB API CALL URL =>", url);
 
 
 /**
@@ -48,11 +43,20 @@ console.log("QB API CALL URL =>", url);
  */
 export const makeQbApiCall = async (endpoint, options = {}) => {
   try {
+    if (!endpoint) throw new Error("No endpoint specified for QuickBooks API call");
+
+    // remove any leading slashes
+    const cleanEndpoint = endpoint.replace(/^\/+/, "");
+
     const tokenRow = await ensureValidToken();  // fetch refreshed token
-    const COMPANY_ID = tokenRow.realmId;  // fetch realmId
+    const COMPANY_ID = tokenRow.realmId; // fetch realmId
+
+    if (!COMPANY_ID) {
+      throw new Error("missing qb company id (realmID)")
+    }
 
     const response = await oauthClient.makeApiCall({
-      url: `${API_BASE}/${COMPANY_ID}/${endpoint}`,
+      url: `${API_BASE}/${COMPANY_ID}/${cleanEndpoint}`,
       method: options.method || "GET",
       headers: {
         "Content-Type": "application/json",
@@ -60,12 +64,27 @@ export const makeQbApiCall = async (endpoint, options = {}) => {
       },
       body: options.body || undefined,
     });
-    console.log("QB API CALL URL =>", `${API_BASE}/${COMPANY_ID}/${endpoint}`);
-
 
     return response.response.data;
   } catch (error) {
-    console.error("QuickBooks API call failed", error);
+    console.error("QuickBooks API call failed:", error);
     throw error;
   }
 };
+
+//     const response = await oauthClient.makeApiCall({
+//       url: `${API_BASE}/${COMPANY_ID}/${endpoint}`,
+//       method: options.method || "GET",
+//       headers: {
+//         "Content-Type": "application/json",
+//         ...(options.headers || {}),
+//       },
+//       body: options.body || undefined,
+//     });
+
+//     return response.response.data;
+//   } catch (error) {
+//     console.error("QuickBooks API call failed", error);
+//     throw error;
+//   }
+// };

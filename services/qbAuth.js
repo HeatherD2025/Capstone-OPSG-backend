@@ -7,7 +7,7 @@ import { makeQbApiCall } from "../utils/qbApiHelper.js";
 export const oauthClient = new OAuthClient({
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  environment: process.env.ENVIRONMENT,
+  environment: process.env.QB_ENVIRONMENT,
   redirectUri: process.env.REDIRECT_URL,
 });
 
@@ -31,19 +31,20 @@ export const qbToken = async (req, res) => {
   try {
     const authResponse = await oauthClient.createToken(parseRedirect);
     const refreshToken = authResponse?.token?.refresh_token;
+    const realmId = authResponse?.token?.realmId || req.query.realmId;
 
     if (!refreshToken) {
-      throw new error("No refresh token received from Quickbooks");
+      throw new Error("No refresh token received from Quickbooks");
     }
 
     // store refresh token
     await prisma.token.upsert({
       where: { id: 1 },
-      update: { refreshToken },
-      create: { id: 1, refreshToken },
+      update: { refreshToken, realmId },
+      create: { id: 1, refreshToken, realmId },
     });
 
-    console.log("Quickbooks refreshed token stored");
+    console.log("Quickbooks refreshed token and realmId stored");
     res.redirect("/qbauth/account"); // will redirect here with token
   } catch (error) {
     console.error("Quickbooks token exchange error", error);
@@ -76,7 +77,7 @@ export const disconnect = async (req, res) => {
     // clear token from db
     await prisma.token.update({
       where: { id: 1 },
-      data: { refreshToken: "" },
+      data: { refreshToken: "", realmId: null },
     });
 
     res.redirect("/");
