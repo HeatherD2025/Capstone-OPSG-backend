@@ -28,7 +28,7 @@ export async function refreshQbToken(req, res, next) {
     let realmId = tokenTable.realmId;
 
     if (isExpired) {
-      console.log("🔁 Refreshing expired QuickBooks access token...");
+      console.log("Refreshing expired QuickBooks access token...");
 
       // handles exchanging refresh token for new tokens
       const authResponse = await oauthClient.refreshUsingToken(

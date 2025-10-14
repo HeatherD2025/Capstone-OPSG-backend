@@ -3,11 +3,6 @@ import OAuthClient from "intuit-oauth";
 import "dotenv/config";
 import { makeQbApiCall } from "../utils/qbApiHelper.js";
 
-const COMPANY_ID = process.env.QB_COMPANY_ID;
-const API_BASE =
-  process.env.QB_API_BASE ||
-  "https://sandbox-quickbooks.api.intuit.com/v3/company";
-
 // create OAuth client
 export const oauthClient = new OAuthClient({
   clientId: process.env.CLIENT_ID,

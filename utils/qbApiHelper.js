@@ -3,9 +3,14 @@ import { oauthClient } from "../services/qbAuth.js";
 import "dotenv/config";
 
 // const COMPANY_ID = process.env.QB_COMPANY_ID;
-const API_BASE =
-  process.env.QB_API_BASE ||
-  "https://sandbox-quickbooks.api.intuit.com/v3/company";
+// const API_BASE =
+//   process.env.QB_API_BASE ||
+//   "https://sandbox-quickbooks.api.intuit.com/v3/company";
+const API_BASE = (process.env.QB_API_BASE || "https://sandbox-quickbooks.api.intuit.com/v3/company")
+  .replace(/\/+$/, ""); // strip trailing slashes
+
+const COMPANY_ID = process.env.QB_COMPANY_ID;
+
 
 // before making API call, check if QB has a valid access token
 async function ensureValidToken() {
@@ -30,6 +35,11 @@ async function ensureValidToken() {
   }
 }
 
+const cleanEndpoint = endpoint.replace(/^\/+/, ""); // strip any leading slash
+const url = `${API_BASE}/${COMPANY_ID}/${cleanEndpoint}`;
+console.log("QB API CALL URL =>", url);
+
+
 /**
  * Makes an API call to QuickBooks, automatically including company ID + base URL.
  * @param {string} endpoint - The path after the company ID, e.g. "query?query=select * from Account&minorversion=75"
@@ -50,6 +60,8 @@ export const makeQbApiCall = async (endpoint, options = {}) => {
       },
       body: options.body || undefined,
     });
+    console.log("QB API CALL URL =>", `${API_BASE}/${COMPANY_ID}/${endpoint}`);
+
 
     return response.response.data;
   } catch (error) {
