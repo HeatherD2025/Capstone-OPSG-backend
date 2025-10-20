@@ -9,29 +9,29 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  // once deployed, add frontend here 
-]
+  // once deployed, add frontend here
+];
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use(cors({
-  // set to allow multiple origins
-  origin: function(origin, callback) {
-    if (!origin) return callback(null, true);
+app.use(
+  cors({
+    // set to allow multiple origins
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true, //ensures uth headers/cookies sent
-  allowedHeaders: ["Content-Type", "Authorization"],
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
-}));
-
-// app.options("/.*/", cors());
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, //ensures uth headers/cookies sent
+    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  })
+);
 
 app.use(morgan("dev"));
 

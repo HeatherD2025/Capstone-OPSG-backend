@@ -16,6 +16,6 @@ router.get("/callback", qbToken);
 router.get("/disconnect", disconnect);
 
 router.get("/account", isLoggedIn, refreshQbToken, account);
-router.get("/company/:id", isLoggedIn, refreshQbToken, customerBalance);
+router.get("/customer/:id", isLoggedIn, refreshQbToken, customerBalance);
 
 export default router;

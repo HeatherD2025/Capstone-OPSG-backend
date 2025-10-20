@@ -1,6 +1,6 @@
 import express from "express";
 import { isLoggedIn } from "../middleware/isLoggedIn.js";
-import { changePassword } from "../controllers/changePassWord.js";
+import { changePassword } from "../controllers/changePassword.js";
 import {
   getUserById,
   updateUserProfile,
