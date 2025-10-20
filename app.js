@@ -2,8 +2,10 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 
-import adminRoutes from "./routes/authRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import qbAuthRoutes from "./services/qbAuthRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 const app = express();
 
@@ -36,15 +38,18 @@ app.use(
 app.use(morgan("dev"));
 
 // Backend routes
-app.use("/auth", adminRoutes);
+app.use("/admin", adminRoutes);
 app.use("/qbauth", qbAuthRoutes);
+app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
 
-// Error handling middleware
+// Error handling middleware - Lets axiosBaseQuery to handle structured responses
 app.use((error, req, res, next) => {
   console.error(error.stack);
-  res
-    .status(error.status || 500)
-    .send(error.message || "Internal server error.");
+  res.status(error.status || 500).json({
+    error: true,
+    message: error.message || "Internal server error",
+  });
 });
 
 // Default to 404 if no other route matched

@@ -1,7 +1,7 @@
 import prisma from "../common/client.js";
 import bcrypt from "bcrypt";
 
-export async function changePassword(req, res, next) {
+export const changePassword = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const { currentPassword, newPassword, confirmPassword } = req.body;
@@ -18,7 +18,7 @@ export async function changePassword(req, res, next) {
     if (newPassword !== confirmPassword) {
       return res.status(400).json({
         statusCode: 400,
-        message: "newPassword and confirmPassword do not match",
+        message: "Passwords do not match",
       });
     }
 
