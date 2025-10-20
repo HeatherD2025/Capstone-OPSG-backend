@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import prisma from "../common/client.js";
 
 export const getUserById = async (req, res, next) => {

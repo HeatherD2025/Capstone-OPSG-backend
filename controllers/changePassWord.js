@@ -1,7 +1,7 @@
 import prisma from "../common/client.js";
 import bcrypt from "bcrypt";
 
-export const changePassword = async (req, res, next) => {
+const changePassword = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const { currentPassword, newPassword, confirmPassword } = req.body;
@@ -58,4 +58,6 @@ export const changePassword = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-}
+};
+
+export default changePassword;

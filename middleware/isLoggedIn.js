@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 
-export async function isLoggedIn(req, res, next) {
+const isLoggedIn = (req, res, next) => {
   try {
     const token = req.headers.authorization?.replace("Bearer ", ""); // Extract the token
 
@@ -19,4 +19,6 @@ export async function isLoggedIn(req, res, next) {
     return res.status(401).json({ error: "Invalid token." }); // Respond with an error if the token is invalid
   }
 };
+
+export default isLoggedIn;
 

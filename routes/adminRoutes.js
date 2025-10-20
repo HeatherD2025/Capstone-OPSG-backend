@@ -1,5 +1,5 @@
 import express from "express";
-import { isLoggedIn } from "../middleware/isLoggedIn.js";
+import isLoggedIn from "../middleware/isLoggedIn.js";
 import adminAccess from "../middleware/adminAccess.js";
 import {
   getAllUsers,
