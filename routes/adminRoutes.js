@@ -4,7 +4,7 @@ import adminAccess from "../middleware/adminAccess.js";
 import {
   getAllUsers,
   deleteUserById,
-} from "../controllers/authController.js";
+} from "../controllers/adminController.js";
 
 const router = express.Router();
 
