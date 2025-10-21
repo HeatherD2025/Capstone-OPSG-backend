@@ -10,7 +10,7 @@ const generateAccessToken = (user) => {
       email: user.email,
       isAdmin: user.isAdmin
     },
-    process.env.WEB_TOKEN || process.env.ACCESS_TOKEN_SECRET,
+    process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "15m"}
   );
 };
@@ -18,8 +18,8 @@ const generateAccessToken = (user) => {
 const generateRefreshToken = (user) => {
   return jwt.sign(
     { id: user.id },
-    process.env.WEB_TOKEN || process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "1d"}
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: "7d"}
   );
 };
 
@@ -107,8 +107,8 @@ export const register = async (req, res, next) => {
       },
     });
 
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
+    const accessToken = generateAccessToken(registerUser);
+    const refreshToken = generateRefreshToken(registerUser);
 
     const { password: _, ...userWithoutPassword } = registerUser;
 

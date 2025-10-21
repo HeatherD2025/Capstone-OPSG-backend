@@ -5,9 +5,9 @@ import "dotenv/config";
 import { faker } from "@faker-js/faker";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-const WEB_TOKEN = process.env.WEB_TOKEN || "1234";
 
-console.log("WEB_TOKEN =", process.env.WEB_TOKEN);
+
+console.log("webToken", process.env.WEB_TOKEN);
 
 // seed a single refresh token
 async function seedRefreshToken() {
@@ -64,10 +64,17 @@ async function seed() {
         },
       });
 
-      const token = jwt.sign({ id: user.id, email: user.email }, WEB_TOKEN, {
-        expiresIn: "1d",
-      });
-      seededTokens.push({ email: user.email, token });
+      const accessToken = jwt.sign({ id: user.id, email: user.email },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "15m"}
+      );
+      const refreshToken = jwt.sign(
+        { id: user.id },
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      seededTokens.push({ email: user.email, accessToken, refreshToken });
     }
   }
 
@@ -86,14 +93,21 @@ async function seed() {
       },
     });
 
-    const token = jwt.sign({ id: user.id, email: user.email }, WEB_TOKEN, {
-      expiresIn: "1d",
-    });
-    seededTokens.push({ email: user.email, token });
+    const accessToken = jwt.sign({ id: user.id, email: user.email },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "15m"}
+    );
+    const refreshToken = jwt.sign(
+      { id: user.id },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    seededTokens.push({ email: user.email, accessToken, refreshToken });
   }
 
   //create admin role for myself
-  const hashedAdminPassword = bcrypt.hash(ADMIN_PASSWORD, 10);
+  const hashedAdminPassword = await bcrypt.hash(ADMIN_PASSWORD, 10);
   const createAdmin = await prisma.user.create({
     data: {
       firstName: "Heather",
@@ -104,20 +118,26 @@ async function seed() {
     },
   });
 
-  const adminToken = jwt.sign(
+  const adminAccessToken = jwt.sign(
     { id: createAdmin.id, email: createAdmin.email, isAdmin: true },
-    WEB_TOKEN,
-    { expiresIn: "1d" }
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: "15m" }
+  );
+  const adminRefreshToken = jwt.sign(
+    { id: createAdmin.id, email: createAdmin.email, isAdmin: true },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: "7d" }
   );
 
   console.log("Admin user created:", createAdmin.email);
-  console.log("Admin token:", adminToken);
+  console.log("Admin token:", adminAccessToken, adminRefreshToken);
 
   // log tokens
-  seededTokens.forEach(({ email, token }) => {
-    console.log(`${email}: ${token}`);
+  seededTokens.forEach(({ email, accessToken, refreshToken }) => {
+    console.log(`${email}: Access=${accessToken} Refresh=${refreshToken}`);
   });
-  console.log(" Database seeded");
+
+  console.log(" Database seeded successfully");
 }
 
 await seedRefreshToken();

@@ -11,7 +11,7 @@ const isLoggedIn = (req, res, next) => {
         .json({ error: "You must be logged in to access this resource." });
     }
 
-    const user = jwt.verify(token, process.env.WEB_TOKEN); // Verify the token using the secret key
+    const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET); // Verify the token using the secret key
     req.user = user; // Attach the user information to the request object
     next(); // Call the next middleware or route handler
   } catch (error) {
