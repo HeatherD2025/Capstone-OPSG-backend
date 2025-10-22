@@ -21,7 +21,7 @@ async function ensureValidToken() {
   try {
     const currentToken = oauthClient.getToken();
 
-    if (!currentToken || !currentToken.access_token) {
+    if (!currentToken || !currentToken.accessToken) {
       console.log("Refreshing Quickbooks before call to API...");
       await oauthClient.refreshUsingToken(tokenRow.refreshToken);
     }
