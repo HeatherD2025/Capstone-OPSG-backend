@@ -67,8 +67,8 @@ export const login = async (req, res, next) => {
       message: "Login successful",
       data: {
         user: userWithoutPassword,
-        token: accessToken,
-        refreshToken,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
       },
     });
   } catch (error) {
@@ -117,8 +117,8 @@ export const register = async (req, res, next) => {
       message: "Registration succesful",
       data: {
         user: userWithoutPassword,
-        accessToken,
-        refreshToken,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
       },
     });
   } catch (error) {
