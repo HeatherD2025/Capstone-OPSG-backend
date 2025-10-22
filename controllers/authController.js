@@ -67,7 +67,7 @@ export const login = async (req, res, next) => {
       message: "Login successful",
       data: {
         user: userWithoutPassword,
-        accessToken,
+        token: accessToken,
         refreshToken,
       },
     });
