@@ -30,7 +30,7 @@ export const qbToken = async (req, res) => {
   const parseRedirect = req.url;
   try {
     const authResponse = await oauthClient.createToken(parseRedirect);
-    const refreshToken = authResponse?.token?.refresh_token;
+    const refreshToken = authResponse?.token?.refreshToken;
     const realmId = authResponse?.token?.realmId || req.query.realmId;
 
     if (!refreshToken) {

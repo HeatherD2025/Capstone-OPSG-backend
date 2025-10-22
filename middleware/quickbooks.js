@@ -37,7 +37,7 @@ export async function refreshQbToken(req, res, next) {
       const tokenData = authResponse?.token;
 
       newAccessToken = tokenData?.access_token;
-      newRefreshToken = tokenData?.refresh_token || tokenTable.refreshToken;
+      newRefreshToken = tokenData?.refreshToken || tokenTable.refreshToken;
       realmId = tokenData?.realmId || tokenTable.realmId;
 
       if (!newAccessToken) {
