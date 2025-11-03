@@ -1,25 +1,27 @@
 import express from "express";
 import isLoggedIn from "../middleware/isLoggedIn.js";
+import { refreshTokenHandler } from "../controllers/authController.js";
 import { register, login } from "../controllers/authController.js";
 
 const router = express.Router();
 
 router.post("/login", login);
 router.post("/register", register);
-router.post("/auth/refresh", async (req, res) => {
-  const { refreshToken } = req.body;
-  if (!refreshToken) return res.status(401).json({ message: "No token" });
+router.post("/auth/refresh", refreshTokenHandler);
+// router.post("/auth/refresh", async (req, res) => {
+//   const { refreshToken } = req.body;
+//   if (!refreshToken) return res.status(401).json({ message: "No token" });
 
-  try {
-    const userData = verifyRefreshToken(refreshToken); // your logic
-    const newAccessToken = generateAccessToken(userData);
-    const newRefreshToken = generateRefreshToken(userData);
+//   try {
+//     const userData = verifyRefreshToken(refreshToken); // your logic
+//     const newAccessToken = generateAccessToken(userData);
+//     const newRefreshToken = generateRefreshToken(userData);
 
-    res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
-  } catch (err) {
-    res.status(403).json({ message: "Invalid refresh token" });
-  }
-});
+//     res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+//   } catch (err) {
+//     res.status(403).json({ message: "Invalid refresh token" });
+//   }
+// });
 
 // // router.get('/user/:userId', isLoggedIn)
 
