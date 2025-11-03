@@ -6,6 +6,21 @@ const router = express.Router();
 
 router.post("/login", login);
 router.post("/register", register);
+router.post("/auth/refresh", async (req, res) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) return res.status(401).json({ message: "No token" });
+
+  try {
+    const userData = verifyRefreshToken(refreshToken); // your logic
+    const newAccessToken = generateAccessToken(userData);
+    const newRefreshToken = generateRefreshToken(userData);
+
+    res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+  } catch (err) {
+    res.status(403).json({ message: "Invalid refresh token" });
+  }
+});
+
 // // router.get('/user/:userId', isLoggedIn)
 
 // // export default router;
