@@ -32,6 +32,7 @@ app.use(
     credentials: true, //ensures uth headers/cookies sent
     allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    preflightContinue: false, // this ensures Express can handle 'OPTIONS'
   })
 );
 

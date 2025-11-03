@@ -4,7 +4,7 @@ import "dotenv/config";
 import { makeQbApiCall } from "../utils/qbApiHelper.js";
 
 // create OAuth client
-export const oauthClient = new OAuthClient({
+const oauthClient = new OAuthClient({
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
   environment: process.env.QB_ENVIRONMENT,
@@ -12,7 +12,7 @@ export const oauthClient = new OAuthClient({
 });
 
 // connect to Quickbooks
-export const connect = async (req, res) => {
+const connect = async (req, res) => {
   try {
     const authUri = oauthClient.authorizeUri({
       scope: [OAuthClient.scopes.Accounting, OAuthClient.scopes.Payment],
@@ -26,12 +26,12 @@ export const connect = async (req, res) => {
 };
 
 // Quickbooks OAuth callback
-export const qbToken = async (req, res) => {
+const qbToken = async (req, res) => {
   const parseRedirect = req.url;
   try {
     const authResponse = await oauthClient.createToken(parseRedirect);
     const refreshToken = authResponse?.token?.refreshToken;
-    const realmId = authResponse?.token?.realmId || req.query.realmId;
+    // const realmId = authResponse?.token?.realmId || req.query.realmId;
 
     if (!refreshToken) {
       throw new Error("No refresh token received from Quickbooks");
@@ -53,20 +53,34 @@ export const qbToken = async (req, res) => {
 };
 
 // query to get account from sandbox company
-export const account = async (req, res) => {
+// export const account = async (req, res) => {
+//   try {
+//     const data = await makeQbApiCall(
+//       "query?query=select * from Account&minorversion=75"
+//     );
+//     res.status(200).send(data);
+//   } catch (error) {
+//     console.error("Error fetching Quickbooks account", error);
+//     res.status(500).send("Failed to fetch account info");
+//   }
+// };
+const account = async (req, res) => {
   try {
-    const data = await makeQbApiCall(
-      "query?query=select * from Account&minorversion=75"
-    );
-    res.status(200).send(data);
-  } catch (error) {
-    console.error("Error fetching Quickbooks account", error);
-    res.status(500).send("Failed to fetch account info");
+    const response = await oauthClient.makeApiCall({
+      url: `https://sandbox-quickbooks.api.intuit.com/v3/company/9341454546075566/query?query=select * from Account&minorversion=75`,
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    res.status(200).send(response.response.data);
+  } catch (e) {
+    console.error(e);
   }
 };
 
 // revoke access token
-export const disconnect = async (req, res) => {
+const disconnect = async (req, res) => {
   try {
     const token = oauthClient.getToken();
     if (!token) throw new Error("No active Quickbooks token found");
@@ -88,13 +102,38 @@ export const disconnect = async (req, res) => {
 };
 
 // get customer balance
-export const customerBalance = async (req, res) => {
+// export const customerBalance = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const data = await makeQbApiCall(`reports/CustomerBalance?customer=${id}`);
+//     res.status(200).send(data?.Rows?.Row || []);
+//   } catch (error) {
+//     console.error("Error fetching customer balance", error);
+//     res.status(500).send("Failed to fetch customer balance");
+//   }
+// };
+const customerBalance = async (req, res) => {
   try {
-    const { id } = req.params;
-    const data = await makeQbApiCall(`reports/CustomerBalance?customer=${id}`);
-    res.status(200).send(data?.Rows?.Row || []);
-  } catch (error) {
-    console.error("Error fetching customer balance", error);
-    res.status(500).send("Failed to fetch customer balance");
+    const { id } = req.params; // company URL should be as follows: /company/companyID
+    const { response } = await oauthClient.makeApiCall({
+      url: `https://sandbox-quickbooks.api.intuit.com/v3/company/9341454546075566/reports/CustomerBalance?customer=${id}`,
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = response.data.Rows.Row;
+    res.status(200).send(data);
+  } catch (e) {
+    console.error(e);
   }
+};
+
+module.exports = {
+  oauthClient,
+  connect,
+  qbToken,
+  account,
+  disconnect,
+  customerBalance,
 };
