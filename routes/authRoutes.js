@@ -32,7 +32,7 @@ import {
   account,
   disconnect,
   customerBalance,
-} from "./qbAuth.js";
+} from "../services/qbAuth.js";
 import isLoggedIn from "../middleware/isLoggedIn.js";
 import { refreshQbToken } from "../middleware/quickbooks.js";
 
