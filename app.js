@@ -44,6 +44,9 @@ app.use("/qbauth", qbAuthRoutes);
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 
+// root route to check server health
+app.get("/", (req, res) => res.send("Server healthy"));
+
 // Error handling middleware - Lets axiosBaseQuery to handle structured responses
 app.use((error, req, res, next) => {
   console.error(error.stack);
