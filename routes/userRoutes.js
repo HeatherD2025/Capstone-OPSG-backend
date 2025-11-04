@@ -29,12 +29,12 @@ const router = express.Router();
 
 // Authenticated user routes (current user)
 router.get("/me", isLoggedIn, getUserById);
-router.put("/me", isLoggedIn, updateUserProfile);
+router.put("/updateUserProfile/:userId", isLoggedIn, updateUserProfile);
 router.patch("/me/password", isLoggedIn, changePassword);
 
 // Admin or external use: access any user by ID
 router.get("/:userId", isLoggedIn, getUserById);
-router.put("/:userId", isLoggedIn, updateUserProfile);
+// router.put("/updateUserProfile/:userId", isLoggedIn, updateUserProfile);
 router.patch("/:userId/password", isLoggedIn, changePassword);
 
 export default router;
