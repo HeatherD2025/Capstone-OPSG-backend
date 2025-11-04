@@ -195,12 +195,20 @@ export const disconnect = async (req, res) => {
 export const customerBalance = async (req, res) => {
   try {
     // Support /customer/:id or /customer/:userId/:id
-    const userId = req.params.userId || req.user.id;
-    const customerId = req.params.id;
+    // const userId = req.params.userId || req.user.id;
+    // const customerId = req.params.id;
+    const { id } = req.params;
+
+    // for no Id return placeholder data
+    if (!id || id === "undefined") {
+      return res.status(200).json([
+        { ColData: [{ value: "Demo Customer" }, { value: "0.00" }] },
+    ]);
+    }
 
     const data = await makeQbApiCall(
-      `reports/CustomerBalance?customer=${customerId}`,
-      { headers: { "Authorization": `Bearer ${req.qbAccessToken}` } }
+      `reports/CustomerBalance?customer=${id}`,
+      { headers: { Authorization: `Bearer ${req.qbAccessToken}` } }
     );
 
     res.status(200).send(data?.Rows?.Row || []);
