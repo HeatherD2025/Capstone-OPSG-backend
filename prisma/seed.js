@@ -5,6 +5,7 @@ import "dotenv/config";
 import { faker } from "@faker-js/faker";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD;
 
 async function seed() {
   try {
@@ -130,6 +131,33 @@ async function seed() {
   console.log(`isAdmin: ${admin.isAdmin}`);
   console.log(`AccessToken: ${adminAccessToken}`);
   console.log(`RefreshToken: ${adminRefreshToken}`);
+
+
+  console.log("Creating a demo user role")
+  //create admin role for myself
+  const hashedDemoUserPassword = await bcrypt.hash(DEMO_USER_PASSWORD, 10);
+  const demoUser = await prisma.user.create({
+    data: {
+      firstName: "Demo",
+      lastName: "User",
+      email: "demo@demo.com",
+      password: hashedDemoUserPassword,
+      isAdmin: false,
+    },
+  });
+
+  const demoUserAccessToken = jwt.sign(
+    { id: demoUser.id, email: demoUser.email, isAdmin: false },
+    process.env.DEMO_USER_ACCESS_TOKEN,
+    { expiresIn: "15m" }
+  );
+  const demoUserRefreshToken = jwt.sign(
+    { id: demoUser.id, email: demoUser.email, isAdmin: false },
+    process.env.DEMO_USER_REFRESH_TOKEN,
+    { expiresIn: "7d" }
+  );
+
+  console.log(`Demo user created: ${demoUser.email}`);
 
   console.log(" Database seeded successfully");
 } catch (error) {
