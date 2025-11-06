@@ -3,6 +3,7 @@ import isLoggedIn from "../middleware/isLoggedIn.js";
 import adminAccess from "../middleware/adminAccess.js";
 import {
   getAllUsers,
+  searchUsers,
   deleteUserById,
 } from "../controllers/adminController.js";
 
@@ -13,6 +14,7 @@ router.get("/dashboard", isLoggedIn, adminAccess, (req, res) => {
 });
 
 router.get("/users", isLoggedIn, adminAccess, getAllUsers);
+router.get("/search", isLoggedIn, adminAccess, searchUsers);
 router.delete("/users/:userId", isLoggedIn, adminAccess, deleteUserById);
 
 export default router;

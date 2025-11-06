@@ -24,6 +24,7 @@ import {
   getUserById,
   updateUserProfile,
 } from "../controllers/userController.js";
+import adminAccess from "../middleware/adminAccess.js";
 
 const router = express.Router();
 
@@ -32,8 +33,6 @@ router.get("/me", isLoggedIn, getUserById);
 router.put("/updateUserProfile/:userId", isLoggedIn, updateUserProfile);
 router.patch("/me/password", isLoggedIn, changePassword);
 
-// Admin or external use: access any user by ID
-router.get("/:userId", isLoggedIn, getUserById);
 // router.put("/updateUserProfile/:userId", isLoggedIn, updateUserProfile);
 router.patch("/:userId/password", isLoggedIn, changePassword);
 
