@@ -5,7 +5,7 @@ export const getAllUsers = async (req, res, next) => {
   try {
     const allUsers = await prisma.user.findMany();
 
-    if (users.length === 0) {
+    if (allUsers.length === 0) {
       return res.status(404).json({
         statusCode: 404,
         message: "No users found.",
@@ -16,7 +16,7 @@ export const getAllUsers = async (req, res, next) => {
     res.status(200).json({
         statusCode: 200,
         message: "Users suessfully retrieved",
-        data: users
+        data: allUsers
     })
   } catch (error) {
     next(error);
