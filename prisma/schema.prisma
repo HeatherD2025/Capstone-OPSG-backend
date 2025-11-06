@@ -17,7 +17,7 @@ model User {
   password    String
   dateAdded   DateTime @default(now()) @db.Date
   dateUpdated DateTime @updatedAt @db.Date
-  Company     Company? @relation(fields: [companyId], references: [id])
+  company     Company? @relation(fields: [companyId], references: [id])
   companyId   String?
   isAdmin     Boolean  @default(false)
 }

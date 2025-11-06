@@ -6,29 +6,18 @@ import { faker } from "@faker-js/faker";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
-
-console.log("webToken", process.env.WEB_TOKEN);
-
-// seed a single refresh token
-async function seedRefreshToken() {
-  // delete old seeded tokens
-  await prisma.token.deleteMany();
-  await prisma.token.create({
-    data: {
-      refreshToken: "placeholder",
-    },
-  });
-}
-
 async function seed() {
-  await prisma.user.deleteMany();
-  await prisma.company.deleteMany();
+  try {
+    console.log("Clearing existing data...")
+    await prisma.token.deleteMany();
+    await prisma.user.deleteMany();
+    await prisma.company.deleteMany();
 
-  //store all sedded tokens in array
-  const seededTokens = [];
 
+  console.log("Creating fake companies")
   // Create companies
   const companies = [];
+
   for (let i = 0; i < 5; i++) {
     const company = await prisma.company.create({
       data: {
@@ -45,6 +34,12 @@ async function seed() {
     companies.push(company);
   }
 
+  console.log(`Created ${companies.length}`);
+  companies.forEach((c) => console.log(`- ${c.name}`));
+
+  const seededTokens = [];
+
+  console.log("Creating users for companies")
   // users for companies
   for (const company of companies) {
     const numEmployees = faker.number.int({ min: 1, max: 10 });
@@ -78,6 +73,7 @@ async function seed() {
     }
   }
 
+  console.log("Creating users without a company")
   // users without company
   for (let i = 0; i < 5; i++) {
     const password = faker.internet.password();
@@ -106,9 +102,10 @@ async function seed() {
     seededTokens.push({ email: user.email, accessToken, refreshToken });
   }
 
+  console.log("Creating my admin role")
   //create admin role for myself
   const hashedAdminPassword = await bcrypt.hash(ADMIN_PASSWORD, 10);
-  const createAdmin = await prisma.user.create({
+  const admin = await prisma.user.create({
     data: {
       firstName: "Heather",
       lastName: "DeLiso",
@@ -119,33 +116,27 @@ async function seed() {
   });
 
   const adminAccessToken = jwt.sign(
-    { id: createAdmin.id, email: createAdmin.email, isAdmin: true },
+    { id: admin.id, email: admin.email, isAdmin: true },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "15m" }
   );
   const adminRefreshToken = jwt.sign(
-    { id: createAdmin.id, email: createAdmin.email, isAdmin: true },
+    { id: admin.id, email: admin.email, isAdmin: true },
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: "7d" }
   );
 
-  console.log("Admin user created:", createAdmin.email);
-  console.log("Admin token:", adminAccessToken, adminRefreshToken);
-
-  // log tokens
-  seededTokens.forEach(({ email, accessToken, refreshToken }) => {
-    console.log(`${email}: Access=${accessToken} Refresh=${refreshToken}`);
-  });
+  console.log(`Admin user created: ${admin.email}`);
+  console.log(`isAdmin: ${admin.isAdmin}`);
+  console.log(`AccessToken: ${adminAccessToken}`);
+  console.log(`RefreshToken: ${adminRefreshToken}`);
 
   console.log(" Database seeded successfully");
-}
-
-await seedRefreshToken();
-await seed()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
+} catch (error) {
+  console.error("Something went wrong seeding", error);
+} finally {
     await prisma.$disconnect();
-  });
+  }
+}
+  
+seed();
