@@ -33,21 +33,23 @@ export const searchUsers = async (req, res, next) => {
       });
     }
 
+    const words = term.trim().split(/\s+/)
+
     // find user and select all info for login, password removed on res.
     const users = await prisma.user.findMany({
-      where: { 
+      where: {
         OR: [
           { email: { contains: term, mode: "insensitive" } },
+          ...words.map((word) => ({
+            AND: [
+              { firstName: { contains: word, mode: "insensitive" } },
+              { lastName: { contains: word, mode: "insensitive" } },
+            ],
+          })),
           { firstName: { contains: term, mode: "insensitive" } },
           { lastName: { contains: term, mode: "insensitive" } },
-          {
-            AND: [
-              { firstName: { contains: term.split("")[0], mode: "insensitive" } },
-              { lastName: { contains: term.split("")[0], mode: "insensitive" } },
-            ],
-          },
         ],
-       },
+      },
       select: {
         id: true,
         firstName: true,
