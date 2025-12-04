@@ -10,8 +10,8 @@ import userRoutes from "./routes/userRoutes.js";
 const app = express();
 
 const allowedOrigins = [
-  "http://localhost:5173",
-  // once deployed, add frontend here
+  // "http://localhost:5173",
+  "https://opsg-demo.netlify.app/"
 ];
 
 app.use(express.urlencoded({ extended: true }));
