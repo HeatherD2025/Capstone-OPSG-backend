@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-
+import prisma from "./common/client.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import qbAuthRoutes from "./services/qbAuthRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
