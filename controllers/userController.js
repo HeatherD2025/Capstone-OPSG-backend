@@ -74,7 +74,7 @@
 // TEST CODE
 import prisma from "../common/client.js";
 
-export const getUserById = async (req, res, next) => {
+export const getCurrentUser = async (req, res, next) => {
   try {
     const userId = req.params.userId || req.user.id; // support /me or /:userId
 

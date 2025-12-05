@@ -21,7 +21,7 @@ import express from "express";
 import isLoggedIn from "../middleware/isLoggedIn.js";
 import changePassword from "../controllers/changePassword.js";
 import {
-  getUserById,
+  getCurrentUser,
   updateUserProfile,
 } from "../controllers/userController.js";
 import adminAccess from "../middleware/adminAccess.js";
@@ -29,7 +29,7 @@ import adminAccess from "../middleware/adminAccess.js";
 const router = express.Router();
 
 // Authenticated user routes (current user)
-router.get("/me", isLoggedIn, getUserById);
+router.get("/me", isLoggedIn, getCurrentUser);
 router.put("/updateUserProfile/:userId", isLoggedIn, updateUserProfile);
 router.patch("/me/password", isLoggedIn, changePassword);
 
