@@ -11,7 +11,7 @@ const app = express();
 
 const allowedOrigins = [
   // "http://localhost:5173",
-  "https://opsg-demo.netlify.app/"
+  "https://opsg-demo.netlify.app",
 ];
 
 app.use(express.urlencoded({ extended: true }));
@@ -29,7 +29,7 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: true, //ensures uth headers/cookies sent
+    credentials: true, //ensures auth headers/cookies sent
     allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     preflightContinue: false, // this ensures Express can handle 'OPTIONS'
