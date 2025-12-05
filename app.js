@@ -47,16 +47,6 @@ app.use("/users", userRoutes);
 // root route to check server health
 app.get("/", (req, res) => res.send("Server healthy"));
 
-app.get("/test-db", async (req, res) => {
-  try {
-    const result = await prisma.user.findMany({ take: 1 }); // adjust table name
-    res.json({ success: true, data: result });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
 // Error handling middleware - Lets axiosBaseQuery to handle structured responses
 app.use((error, req, res, next) => {
   console.error(error.stack);
