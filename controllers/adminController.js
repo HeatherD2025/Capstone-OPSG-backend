@@ -15,7 +15,7 @@ export const getAllUsers = async (req, res, next) => {
 
     res.status(200).json({
         statusCode: 200,
-        message: "Users suessfully retrieved",
+        message: "Users sucessfully retrieved",
         data: allUsers
     })
   } catch (error) {

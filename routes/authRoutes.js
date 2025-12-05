@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post("/login", login);
 router.post("/register", register);
-router.post("/auth/refresh", refreshTokenHandler);
+router.post("/refresh", refreshTokenHandler);
 // router.post("/auth/refresh", async (req, res) => {
 //   const { refreshToken } = req.body;
 //   if (!refreshToken) return res.status(401).json({ message: "No token" });
