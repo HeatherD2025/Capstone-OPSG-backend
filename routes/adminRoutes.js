@@ -3,6 +3,7 @@ import isLoggedIn from "../middleware/isLoggedIn.js";
 import adminAccess from "../middleware/adminAccess.js";
 import {
   getAllUsers,
+  getUserById,
   searchUsers,
   deleteUserById,
 } from "../controllers/adminController.js";
