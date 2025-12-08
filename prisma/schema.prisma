@@ -36,10 +36,10 @@ model Company {
 }
 
 model Token {
-  id           Int      @id @default(1)
+  id           Int      @id @default(autoincrement())
   accessToken  String? // access token from QuickBooks
   refreshToken String // refresh token
   realmId      String? // qb company ID
-  dateAdded    DateTime @default(now()) @db.Date
+  dateAdded    DateTime @default(now())
   dateUpdated  DateTime @updatedAt
 }

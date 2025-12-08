@@ -6,6 +6,8 @@ import { faker } from "@faker-js/faker";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD;
+const DEMO_USER_ACCESS_TOKEN = process.env.DEMO_USER_ACCESS_TOKEN;
+const DEMO_USER_REFRESH_TOKEN = process.env.DEMO_USER_REFRESH_TOKEN;
 
 async function seed() {
   try {
@@ -55,7 +57,6 @@ async function seed() {
             password: hashedPassword,
             dateAdded: faker.date.past(1),
             dateUpdated: faker.date.recent(),
-            company: faker.company.name().toUpperCase(),
             companyId: company.id,
           },
         });
@@ -162,7 +163,7 @@ async function seed() {
 
     console.log(" Database seeded successfully");
   } catch (error) {
-    console.error("Something went wrong seeding", error);
+    console.error("Something went wrong seeding", error.message, error);
   } finally {
     await prisma.$disconnect();
   }
