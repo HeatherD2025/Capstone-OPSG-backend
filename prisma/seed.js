@@ -55,6 +55,7 @@ async function seed() {
             password: hashedPassword,
             dateAdded: faker.date.past(1),
             dateUpdated: faker.date.recent(),
+            company: faker.company.name().toUpperCase(),
             companyId: company.id,
           },
         });
