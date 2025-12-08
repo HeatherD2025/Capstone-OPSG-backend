@@ -23,6 +23,38 @@ export const getAllUsers = async (req, res, next) => {
   }
 };
 
+export const getUserById = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    const getUser = await prisma.findUnique({
+      where: {id: userId},
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        isAdmin: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        statusCode: 404,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      statusCode: 200,
+      data: user,
+      message: "User retreived successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const searchUsers = async (req, res, next) => {
   try {
     const { term } = req.query;
