@@ -136,7 +136,7 @@ async function seed() {
     console.log(`RefreshToken: ${adminRefreshToken}`);
 
     console.log("Creating a demo user role");
-    //create admin role for myself
+
     const hashedDemoUserPassword = await bcrypt.hash(DEMO_USER_PASSWORD, 10);
     const demoUser = await prisma.user.create({
       data: {
@@ -145,6 +145,18 @@ async function seed() {
         email: "demo@demo.com",
         password: hashedDemoUserPassword,
         isAdmin: false,
+        company: {
+          create: {
+            name: "Corktown Medical Center",
+            phoneNumber: "555-675-4399",
+            streetAddress: "9934 Michigan Ave",
+            city: "Detroit",
+            state: "MI",
+            zip: 48216,
+            dateAdded: new Date('2025-07-18T08:13:22Z'),
+            dateUpdated: new Date('2025-10-13T00:00:00Z')
+          }
+        }
       },
     });
 
