@@ -19,21 +19,20 @@
 //TEST CODE 
 import express from "express";
 import isLoggedIn from "../middleware/isLoggedIn.js";
-import changePassword from "../controllers/changePassword.js";
 import {
   getCurrentUser,
   updateUserProfile,
+  // changePassword
 } from "../controllers/userController.js";
-import adminAccess from "../middleware/adminAccess.js";
 
 const router = express.Router();
 
 // Authenticated user routes (current user)
 router.get("/me", isLoggedIn, getCurrentUser);
-router.put("/updateUserProfile/:userId", isLoggedIn, updateUserProfile);
-router.patch("/me/password", isLoggedIn, changePassword);
+router.put("/me/updateUserProfile", isLoggedIn, updateUserProfile);
+// router.patch("/me/password", isLoggedIn, changePassword);
 
 // router.put("/updateUserProfile/:userId", isLoggedIn, updateUserProfile);
-router.patch("/:userId/password", isLoggedIn, changePassword);
+// router.patch("/:userId/password", isLoggedIn, changePassword);
 
 export default router;

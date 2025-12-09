@@ -138,6 +138,7 @@ async function seed() {
     console.log("Creating a demo user role");
 
     const hashedDemoUserPassword = await bcrypt.hash(DEMO_USER_PASSWORD, 10);
+    
     const demoUser = await prisma.user.create({
       data: {
         firstName: "Demo",
