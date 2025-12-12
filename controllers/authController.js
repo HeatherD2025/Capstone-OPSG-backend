@@ -3,25 +3,19 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
-// const generateAccessToken = (user) => {
-//   return jwt.sign(
-//     {
-//       id: user.id,
-//       email: user.email,
-//       isAdmin: user.isAdmin
-//     },
-//     process.env.ACCESS_TOKEN_SECRET,
-//     { expiresIn: "15m"}
-//   );
-// };
+const generateAccessToken = (user) => {
+  return jwt.sign(
+    { id: user.id, email: user.email, isAdmin: user.isAdmin },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: "15m" }
+  );
+};
 
-// const generateRefreshToken = (user) => {
-//   return jwt.sign(
-//     { id: user.id },
-//     process.env.REFRESH_TOKEN_SECRET,
-//     { expiresIn: "7d"}
-//   );
-// };
+const generateRefreshToken = (user) => {
+  return jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: "3d",
+  });
+};
 
 export const login = async (req, res, next) => {
   try {
@@ -68,7 +62,7 @@ export const login = async (req, res, next) => {
       data: {
         user: userWithoutPassword,
         token: accessToken,
-        refreshToken,    
+        refreshToken,
       },
     });
   } catch (error) {
@@ -81,12 +75,12 @@ export const register = async (req, res, next) => {
   try {
     const { firstName, lastName, email, password } = req.body;
 
-    const existingUser = await prisma.user.findUnique({ where: {email} });
+    const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser)
       return res.status(400).json({
         statusCode: 400,
         message: "User already exists",
-  });
+      });
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -118,28 +112,13 @@ export const register = async (req, res, next) => {
       data: {
         user: userWithoutPassword,
         token: accessToken,
-        refreshToken, 
+        refreshToken,
       },
     });
   } catch (error) {
     console.error("Registration error", error);
     next(error);
   }
-};
-
-// TEST CODE
-const generateAccessToken = (user) => {
-  return jwt.sign(
-    { id: user.id, email: user.email, isAdmin: user.isAdmin },
-    process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "15m" }
-  );
-};
-
-const generateRefreshToken = (user) => {
-  return jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: "7d",
-  });
 };
 
 // Refresh token handler
@@ -155,7 +134,13 @@ export const refreshTokenHandler = async (req, res) => {
     // Fetch user from DB
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-      select: { id: true, email: true, firstName: true, lastName: true, isAdmin: true },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isAdmin: true,
+      },
     });
 
     if (!user)

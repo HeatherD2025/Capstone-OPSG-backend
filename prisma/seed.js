@@ -6,8 +6,6 @@ import { faker } from "@faker-js/faker";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD;
-const DEMO_USER_ACCESS_TOKEN = process.env.DEMO_USER_ACCESS_TOKEN;
-const DEMO_USER_REFRESH_TOKEN = process.env.DEMO_USER_REFRESH_TOKEN;
 
 async function seed() {
   try {
@@ -72,12 +70,15 @@ async function seed() {
           { expiresIn: "6h" }
         );
 
-        seededTokens.push({ email: user.email, accessToken, refreshToken });
+        seededTokens.push({
+          email: user.email,
+          accessToken,
+          refreshToken,
+        });
       }
     }
 
-    console.log("Creating users without a company");
-    // users without company
+    // creating users without a company
     for (let i = 0; i < 5; i++) {
       const password = faker.internet.password();
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -100,13 +101,16 @@ async function seed() {
       const refreshToken = jwt.sign(
         { id: user.id },
         process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: "7d" }
+        { expiresIn: "3d" }
       );
 
-      seededTokens.push({ email: user.email, accessToken, refreshToken });
+      seededTokens.push({
+        email: user.email,
+        accessToken,
+        refreshToken,
+      });
     }
 
-    console.log("Creating my admin role");
     //create admin role for myself
     const hashedAdminPassword = await bcrypt.hash(ADMIN_PASSWORD, 10);
     const admin = await prisma.user.create({
@@ -127,19 +131,18 @@ async function seed() {
     const adminRefreshToken = jwt.sign(
       { id: admin.id, email: admin.email, isAdmin: true },
       process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "3d" }
     );
 
-    console.log(`Admin user created: ${admin.email}`);
-    console.log(`isAdmin: ${admin.isAdmin}`);
-    console.log(`AccessToken: ${adminAccessToken}`);
-    console.log(`RefreshToken: ${adminRefreshToken}`);
+    seededTokens.push({
+      email: admin.email,
+      adminAccessToken,
+      adminRefreshToken,
+    });
 
-    console.log("Creating a demo user role");
-
+    // Creating a demo user role
     const hashedDemoUserPassword = await bcrypt.hash(DEMO_USER_PASSWORD, 10);
-    
-    const demoUser = await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         firstName: "Demo",
         lastName: "User",
@@ -154,25 +157,30 @@ async function seed() {
             city: "Detroit",
             state: "MI",
             zip: 48216,
-            dateAdded: new Date('2025-07-18T08:13:22Z'),
-            dateUpdated: new Date('2025-10-13T00:00:00Z')
-          }
-        }
+            dateAdded: new Date("2025-07-18T08:13:22Z"),
+            dateUpdated: new Date("2025-10-13T00:00:00Z"),
+          },
+        },
       },
     });
 
-    const demoUserAccessToken = jwt.sign(
-      { id: demoUser.id, email: demoUser.email, isAdmin: false },
-      process.env.DEMO_USER_ACCESS_TOKEN,
+    const accessToken = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "15m" }
     );
-    const demoUserRefreshToken = jwt.sign(
-      { id: demoUser.id, email: demoUser.email, isAdmin: false },
-      process.env.DEMO_USER_REFRESH_TOKEN,
-      { expiresIn: "7d" }
+    const refreshToken = jwt.sign(
+      { id: user.id },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "3d" }
     );
 
-    console.log(`Demo user created: ${demoUser.email}`);
+    seededTokens.push({
+      email: user.email,
+      accessToken,
+      refreshToken,
+    });
+    console.log(`Demo user created: ${user.email}`);
 
     console.log(" Database seeded successfully");
   } catch (error) {
