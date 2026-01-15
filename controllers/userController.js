@@ -47,31 +47,91 @@ export const getCurrentUser = async (req, res, next) => {
 export const updateUserProfile = async (req, res, next) => {
   try {
     const userId = req.params.userId || req.user.id; // support /me or /:userId
-    const { firstName, lastName, email } = req.body;
 
-    if (!firstName && !lastName && !email) {
+    const { 
+      firstName, 
+      lastName, 
+      email,
+      company = {}, 
+    } = req.body;
+
+    const {
+      name,
+      streetAddress,
+      city,
+      state,
+      zip,
+      phoneNumber,
+    } = company;
+
+    if (
+      !firstName && 
+      !lastName && 
+      !email &&
+      Object.kets(company).length == 0
+    ) {
       return res.status(400).json({
         statusCode: 400,
         message:
-          "At least one of firstName, lastName, or email must be provided",
+          "No valid fields provided for update",
       });
     }
 
-    const updateData = {};
+    const userUpdateData = {};
     if (firstName) updateData.firstName = firstName.trim();
     if (lastName) updateData.lastName = lastName.trim();
     if (email) updateData.email = email.trim().toLowerCase();
 
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: updateData,
-      select: { id: true, firstName: true, lastName: true, email: true },
+    const companyUpdateData = {};
+    if (name) companyUpdateData.name = name.trim();
+    if (streetAddress) companyUpdateData.streetAddress = streetAddress.trim();
+    if (city) companyUpdateData.city = city.trim();
+    if (state) companyUpdateData.state = state.trim();
+    if (zip) companyUpdateData.zip = Number(zip);
+    if (phoneNumber) companyUpdateData.phoneNumber = phoneNumber.trim();
+
+    const updatedUser = await prisma.$transaction(async (tx) => {
+      // Update user (only if needed)
+      if (Object.keys(userUpdateData).length > 0) {
+        await tx.user.update({
+          where: { id: userId },
+          data: userUpdateData,
+        });
+      }
+
+      // Update company (only if needed)
+      if (Object.keys(companyUpdateData).length > 0) {
+        const userWithCompany = await tx.user.findUnique({
+          where: { id: userId },
+          select: { companyId: true },
+        });
+
+        if (!userWithCompany?.companyId) {
+          throw new Error("User has no associated company");
+        }
+
+        await tx.company.update({
+          where: { id: userWithCompany.companyId },
+          data: companyUpdateData,
+        });
+      }
+
+      return tx.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          company: true,
+        },
+      });
     });
 
     return res.status(200).json({
       statusCode: 200,
       data: updatedUser,
-      message: "User profile successfully updated",
+      message: "Profile successfully updated",
     });
   } catch (error) {
     next(error);

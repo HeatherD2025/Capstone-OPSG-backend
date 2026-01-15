@@ -8,6 +8,7 @@ import {
 const router = express.Router();
 
 router.get("/me", isLoggedIn, getCurrentUser);
-router.put("/me/updateUserProfile", isLoggedIn, updateUserProfile);
+router.put("/me", isLoggedIn, updateUserProfile);
+router.put("/updateUserProfile/:userId", isLoggedIn, updateUserProfile);
 
 export default router;
