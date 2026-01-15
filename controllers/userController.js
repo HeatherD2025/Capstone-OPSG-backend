@@ -68,7 +68,7 @@ export const updateUserProfile = async (req, res, next) => {
       !firstName && 
       !lastName && 
       !email &&
-      Object.kets(company).length == 0
+      Object.keys(company).length === 0
     ) {
       return res.status(400).json({
         statusCode: 400,
