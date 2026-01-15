@@ -78,9 +78,9 @@ export const updateUserProfile = async (req, res, next) => {
     }
 
     const userUpdateData = {};
-    if (firstName) updateData.firstName = firstName.trim();
-    if (lastName) updateData.lastName = lastName.trim();
-    if (email) updateData.email = email.trim().toLowerCase();
+    if (firstName) userUpdateData.firstName = firstName.trim();
+    if (lastName) userUpdateData.lastName = lastName.trim();
+    if (email) userUpdateData.email = email.trim().toLowerCase();
 
     const companyUpdateData = {};
     if (name) companyUpdateData.name = name.trim();
