@@ -4,11 +4,27 @@ import bcrypt from "bcrypt";
 
 export const getCurrentUser = async (req, res, next) => {
   try {
-    const userId = req.params.userId || req.user.id; // support /me or /:userId
+    const userId = req.params.userId || req.user.id; // supports /me or /:userId
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, firstName: true, lastName: true, email: true, company: true },
+      select: { 
+        id: true, 
+        firstName: true, 
+        lastName: true, 
+        email: true, 
+        company: {
+          select: {
+            id: true,
+            name: true,
+            phoneNumber: true,
+            streetAddress: true,
+            city: true,
+            state: true,
+            zip: true,
+          }
+         }
+        },
     });
 
     if (!user) {
