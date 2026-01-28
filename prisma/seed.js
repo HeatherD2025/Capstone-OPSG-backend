@@ -7,6 +7,8 @@ import { faker } from "@faker-js/faker";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD;
 
+
+// Seed db with fake companies, users, and users with company relationships
 async function seed() {
   try {
     console.log("Clearing existing data...");

@@ -3,6 +3,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
+
+//generate tokens 
 const generateAccessToken = (user) => {
   return jwt.sign(
     { id: user.id, email: user.email, isAdmin: user.isAdmin },
@@ -41,6 +43,7 @@ export const login = async (req, res, next) => {
       });
     }
 
+    //verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -82,6 +85,8 @@ export const register = async (req, res, next) => {
         message: "User already exists",
       });
 
+
+    // salt and hash password for registration
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 

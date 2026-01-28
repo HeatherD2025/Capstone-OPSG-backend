@@ -5,6 +5,7 @@ export const getAllUsers = async (req, res, next) => {
   try {
     const allUsers = await prisma.user.findMany();
 
+    // fail and success responses
     if (allUsers.length === 0) {
       return res.status(404).json({
         statusCode: 404,
@@ -27,6 +28,7 @@ export const getUserById = async (req, res, next) => {
   try {
     const { userId } = req.params;
 
+    
     const getUser = await prisma.findUnique({
       where: {id: userId},
       select: {

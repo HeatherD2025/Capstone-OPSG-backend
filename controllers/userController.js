@@ -1,7 +1,7 @@
-// TEST CODE
 import prisma from "../common/client.js";
 import bcrypt from "bcrypt";
 
+// get current user and all profile details
 export const getCurrentUser = async (req, res, next) => {
   try {
     const userId = req.params.userId || req.user.id; // supports /me or /:userId
@@ -12,7 +12,8 @@ export const getCurrentUser = async (req, res, next) => {
         id: true, 
         firstName: true, 
         lastName: true, 
-        email: true, 
+        email: true,
+        // pull all related company details for user
         company: {
           select: {
             id: true,
@@ -99,7 +100,8 @@ export const updateUserProfile = async (req, res, next) => {
         });
       }
 
-      // Update company (only if needed)
+      // Update company (only if needed) 
+      // - use tx for a rolling back update if anything else fails
       if (Object.keys(companyUpdateData).length > 0) {
         const userWithCompany = await tx.user.findUnique({
           where: { id: userId },

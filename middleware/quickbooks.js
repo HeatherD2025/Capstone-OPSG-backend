@@ -1,6 +1,7 @@
 import prisma from "../common/client.js";
 import { oauthClient } from "../services/qbAuth.js";
 
+// qb token handling middleware
 export async function refreshQbToken(req, res, next) {
   try {
     console.log("Checking if QuickBooks token is valid...");
@@ -16,7 +17,7 @@ export async function refreshQbToken(req, res, next) {
         .json({ error: "QuickBooks not connected. Please reconnect." });
     }
 
-    // Get expiration info
+    // Get expiration info - realmId is a qb label for account
     const now = new Date();
     const expiresAt = tokenTable.expiresAt
       ? new Date(tokenTable.expiresAt)
