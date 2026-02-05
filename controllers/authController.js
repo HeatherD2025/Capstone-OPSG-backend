@@ -102,7 +102,7 @@ export const register = async (req, res, next) => {
         firstName: true,
         lastName: true,
         email: true,
-        isAdmin: true,
+        isAdmin: false,
       },
     });
 
