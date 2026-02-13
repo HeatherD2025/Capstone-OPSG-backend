@@ -71,9 +71,8 @@ export const getUsers = async (req, res, next) => {
 // };
 
 export const getUserById = async (req, res, next) => {
+    const userId = req.params.userId;
   try {
-    const { userId } = req.params;
-
     const getUser = await prisma.user.findUnique({
       where: {id: userId},
       select: {
@@ -81,7 +80,6 @@ export const getUserById = async (req, res, next) => {
         firstName: true,
         lastName: true,
         email: true,
-        isAdmin: true,
       },
     });
 
@@ -94,7 +92,7 @@ export const getUserById = async (req, res, next) => {
 
     res.status(200).json({
       statusCode: 200,
-      data: user,
+      data: getUser,
       message: "User retreived successfully",
     });
   } catch (error) {
