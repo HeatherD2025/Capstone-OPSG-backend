@@ -4,7 +4,7 @@ import adminAccess from "../middleware/adminAccess.js";
 import {
   getUsers,
   getUserById,
-  searchUsers,
+  // searchUsers,
   deleteUserById,
 } from "../controllers/adminController.js";
 
