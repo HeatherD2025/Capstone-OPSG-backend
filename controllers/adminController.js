@@ -24,7 +24,7 @@ export const getUsers = async (req, res, next) => {
         firstName: true,
         lastName: true,
         email: true,
-        commpany: true,
+        company: true,
         isAdmin: true,
       },
     })
