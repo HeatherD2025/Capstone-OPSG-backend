@@ -12,7 +12,7 @@ export const getUsers = async (req, res, next) => {
       {email: {contains: term, mode: 'insensitive'}},
       {firstName: {contains: term, mode: 'insensitive'}},
       {lastName: {contains: term, mode: 'insensitive'}},
-      ...words.map(...)
+      ...words.map()
     ]
     
   }
