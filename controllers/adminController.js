@@ -2,44 +2,67 @@ import { Prisma } from '@prisma/client';
 import prisma from '../common/client.js';
 
 export const getUsers = async (req, res, next) => {
-  const { term, role, active, createdAfter, page=1, limit=20} = req.query
-
-  let where = {};
-
-  if (term) {
-    const words = term.trim().split(/\s+/);
-    where.OR = [
-      {email: {contains: term, mode: 'insensitive'}},
-      {firstName: {contains: term, mode: 'insensitive'}},
-      {lastName: {contains: term, mode: 'insensitive'}},
-      ...words.map()
-    ]
-    
-  }
   try {
-    const allUsers = await prisma.user.findMany({
-    where: {},
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        company: true,
-        isAdmin: true,
-      },
-    })
-    if (!firstName || !lastName || !email) {
-      return res.status(404).json ({
-        statusCode: 404,
-        message: "User not found"
-      })
 
+    const { term, role, active, createdAfter, page = 1, limit = 20} = req.query
+
+    // bc filters are optional, Prisma query is built dynamically
+    let where = {};
+
+    if (term) {
+      const words = term.trim().split(/\s+/);
+
+      // OR conditions - any can match
+      where.OR = [
+        {email: {contains: term, mode: 'insensitive'}},
+        {firstName: {contains: term, mode: 'insensitive'}},
+        {lastName: {contains: term, mode: 'insensitive'}},
+
+        // ... bc array is returned, match first name OR last for both words
+        ...words.map(word => ({
+          OR: [
+            { firstName: { contains: word, mode: 'insensitive'} },
+            { lastName: {contains: word, mode: 'insensitive'} },
+          ]
+        }))
+      ];
     }
 
-    // if term  - add OR conditions for firstName/lastName/email
-    // if role filter
-    // if active filter
-    // if createdAfter date filter
+    // adds admin role where provided
+    if (role) {
+      where.role = role;
+    }
+
+
+    if (active !== undefined) {
+      where.active = active === "true";
+    }
+
+    if (createdAfter) {
+      where.createdAt = {
+        gte: new Date(createdAfter)
+      };
+    }
+
+    const allUsers = await prisma.user.findMany({
+      where,
+      skip: (page -1) * limit,
+      take: Number(limit),
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          company: true,
+          isAdmin: true,
+        },
+      });
+
+       res.status(200).json({
+        statusCode: 200,
+        data: allUsers,
+        message: "Users retrieved successfully",
+      });
 
   } catch (error) {
     next(error);
@@ -93,7 +116,7 @@ export const getUserById = async (req, res, next) => {
     res.status(200).json({
       statusCode: 200,
       data: getUser,
-      message: "User retreived successfully",
+      message: "User retrieved successfully",
     });
   } catch (error) {
     next(error);
