@@ -4,7 +4,6 @@ import adminAccess from "../middleware/adminAccess.js";
 import {
   getUsers,
   getUserById,
-  // searchUsers,
   deleteUserById,
 } from "../controllers/adminController.js";
 
@@ -15,7 +14,6 @@ router.get("/dashboard", isLoggedIn, adminAccess, (req, res) => {
 });
 
 router.get("/users", isLoggedIn, adminAccess, getUsers);
-// router.get("/search", isLoggedIn, adminAccess, searchUsers);
 router.get("/users/:userId", isLoggedIn, adminAccess, getUserById);
 router.delete("/users/:userId", isLoggedIn, adminAccess, deleteUserById);
 

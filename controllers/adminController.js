@@ -103,6 +103,7 @@ export const getUserById = async (req, res, next) => {
         firstName: true,
         lastName: true,
         email: true,
+        company: true,
       },
     });
 
@@ -122,61 +123,6 @@ export const getUserById = async (req, res, next) => {
     next(error);
   }
 };
-
-// export const searchUsers = async (req, res, next) => {
-//   try {
-//     const { term } = req.query;
-//     if (!term) {
-//       return res.status(400).json({
-//         statusCode: 400,
-//         message: "Please provide a search term"
-//       });
-//     }
-
-//     const words = term.trim().split(/\s+/)
-
-//     // find user and select all info for login, password removed on res.
-//     const users = await prisma.user.findMany({
-//       where: {
-//         OR: [
-//           { email: { contains: term, mode: "insensitive" } },
-//           ...words.map((word) => ({
-//             AND: [
-//               { firstName: { contains: word, mode: "insensitive" } },
-//               { lastName: { contains: word, mode: "insensitive" } },
-//             ],
-//           })),
-//           { firstName: { contains: term, mode: "insensitive" } },
-//           { lastName: { contains: term, mode: "insensitive" } },
-//         ],
-//       },
-//       select: {
-//         id: true,
-//         firstName: true,
-//         lastName: true,
-//         email: true,
-//         isAdmin: true,
-//       },
-//     });
-
-//     if (!users || users.length === 0) {
-//       return res.status(200).json({
-//         statusCode: 200,
-//         message: "OK",
-//       });
-//     }
-
-//     res.status(200).json({
-//       statusCode: 200,
-//       message: "User found",
-//       data: users,
-//     });
-//   } catch (error) {
-//     console.error("Search user error", error);
-//     next(error);
-//   }
-// };
-
 
 export const deleteUserById = async (req, res, next) => {
   const { userId } = req.params;
