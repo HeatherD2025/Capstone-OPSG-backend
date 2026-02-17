@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { faker } from "@faker-js/faker";
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const DEMO_ADMIN_PASSWORD = process.env.DEMO_ADMIN_PASSWORD;
 const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD;
 
 
@@ -114,12 +114,12 @@ async function seed() {
     }
 
     //create admin role for myself
-    const hashedAdminPassword = await bcrypt.hash(ADMIN_PASSWORD, 10);
+    const hashedAdminPassword = await bcrypt.hash(DEMO_ADMIN_PASSWORD, 10);
     const admin = await prisma.user.create({
       data: {
-        firstName: "Heather",
-        lastName: "DeLiso",
-        email: "heatherdeliso@gmail.com",
+        firstName: "Admin",
+        lastName: "Demo",
+        email: "adminDemo@demo.com",
         password: hashedAdminPassword,
         isAdmin: true,
       },
