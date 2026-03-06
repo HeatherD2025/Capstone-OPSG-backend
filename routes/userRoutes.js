@@ -4,6 +4,7 @@ import {
   getCurrentUser,
   updateUserProfile,
 } from "../controllers/userController.js";
+import changePassword from "../controllers/changePassword.js";
 
 const router = express.Router();
 
@@ -12,6 +13,6 @@ router.get("/dashboard", isLoggedIn, (req, res) => {
 });
 router.get("/me", isLoggedIn, getCurrentUser);
 router.put("/me", isLoggedIn, updateUserProfile);
-// router.put("/updateUserProfile/:userId", isLoggedIn, updateUserProfile);  // future use - enable pass reset and user delete only
+router.patch("/me/password", isLoggedIn, changePassword);
 
 export default router;

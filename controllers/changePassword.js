@@ -1,113 +1,91 @@
-// // import prisma from "../common/client.js";
-// // import bcrypt from "bcrypt";
+import prisma from "../common/client.js";
+import bcrypt from "bcrypt";
 
-// // const changePassword = async (req, res, next) => {
-// //   try {
-// //     const userId = req.user.id;
-// //     const { currentPassword, newPassword, confirmPassword } = req.body;
+const changePassword = async (req, res, next) => {
+  try {
+    // if id passed in url - admin path, else, user path
+    const targetUserId = req.params.id || req.user.id;
+    const isSelf = targetUserId === req.user.id;
+    const isAdmin = req.user.isAdmin;
 
-// //     // check all fields are filled and old passwords match
-// //     if (!currentPassword || !newPassword || !confirmPassword) {
-// //       return res.status(400).json({
-// //         statusCode: 400,
-// //         message:
-// //           "currentPassword, newPassword, and confirmPassword are all required",
-// //       });
-// //     }
+    if(!isSelf && !isAdmin) {
+      return res.status(403).json({
+        statusCode: 403,
+        message: "Forbidden: You can only change your own password",
+      });
+    }
 
-// //     if (newPassword !== confirmPassword) {
-// //       return res.status(400).json({
-// //         statusCode: 400,
-// //         message: "Passwords do not match",
-// //       });
-// //     }
+    const { currentPassword, newPassword, confirmPassword } = req.body;
 
-// //     //  Fetch the user
-// //     const user = await prisma.user.findUnique({
-// //       where: { id: userId },
-// //     });
+    // check all basic fields are filled
+    if (!newPassword || !confirmPassword) {
+      return res.status(400).json({
+        statusCode: 400,
+        message:
+          "New password and confirmation are required",
+      });
+    }
+    // match passwords on confirmation
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        statusCode: 400,
+        message: "Passwords do not match",
+      });
+    }
+    // check is self with current password
+    if (isSelf && !currentPassword) {
+      return res.status(400).json({
+        statusCode: 400,
+        message: "Current password is required to change your own password",
+      });
+    }
+    // safety net - if not self and not admin, permission denied
+    if (!isSelf && !req.user.isAdmin) {
+        return res.status(403).json({
+            statusCode: 403,
+            message: "Forbidden: Only admins can change other users' passwords",
+        });
+    }
 
-// //     if (!user) {
-// //       return res.status(404).json({
-// //         statusCode: 404,
-// //         message: "User not found",
-// //       });
-// //     }
+    //  Fetch the user
+    const user = await prisma.user.findUnique({
+      where: { id: targetUserId },
+    });
 
-// //     //  Verify current password
-// //     const isMatch = await bcrypt.compare(currentPassword, user.password);
-// //     if (!isMatch) {
-// //       return res.status(401).json({
-// //         statusCode: 401,
-// //         message: "Current password is incorrect",
-// //       });
-// //     }
+    if (!user) {
+      return res.status(404).json({
+        statusCode: 404,
+        message: "User not found",
+      });
+    }
 
-// //     //  Save and hash new password
-// //     const hashed = await bcrypt.hash(newPassword, 10);
-// //     await prisma.user.update({
-// //       where: { id: userId },
-// //       data: { password: hashed },
-// //     });
+    //  Verify current password
+    if (isSelf) {
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
 
-// //     //  Success response
-// //     return res.status(200).json({
-// //       statusCode: 200,
-// //       message: "Password changed successfully",
-// //     });
-// //   } catch (error) {
-// //     next(error);
-// //   }
-// // };
+      if (!isMatch) {
+        return res.status(401).json({
+            statusCode: 401,
+            message: "Current password is incorrect",
+      });
+      }
+    }
 
-// // export default changePassword;
+    //  Save and hash new password
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({
+      where: { id: targetUserId },
+      data: { password: hashed },
+    });
 
+    //  Success response
+    return res.status(200).json({
+      statusCode: 200,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-// // TEST CODE
-// import prisma from "../common/client.js";
-// import bcrypt from "bcrypt";
-
-// const changePassword = async (req, res, next) => {
-//   try {
-//     const userId = req.params.userId || req.user.id; // support /me or /:userId
-//     const { currentPassword, newPassword, confirmPassword } = req.body;
-
-//     if (!currentPassword || !newPassword || !confirmPassword) {
-//       return res.status(400).json({
-//         statusCode: 400,
-//         message:
-//           "currentPassword, newPassword, and confirmPassword are all required",
-//       });
-//     }
-
-//     if (newPassword !== confirmPassword) {
-//       return res.status(400).json({
-//         statusCode: 400,
-//         message: "Passwords do not match",
-//       });
-//     }
-
-//     const user = await prisma.user.findUnique({ where: { id: userId } });
-
-//     if (!user) {
-//       return res.status(404).json({ statusCode: 404, message: "User not found" });
-//     }
-
-//     const isMatch = await bcrypt.compare(currentPassword, user.password);
-//     if (!isMatch) {
-//       return res.status(401).json({ statusCode: 401, message: "Current password is incorrect" });
-//     }
-
-//     const hashed = await bcrypt.hash(newPassword, 10);
-//     await prisma.user.update({ where: { id: userId }, data: { password: hashed } });
-
-//     return res.status(200).json({
-//       statusCode: 200,
-//       message: "Password changed successfully",
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// export default changePassword;
+export default changePassword;

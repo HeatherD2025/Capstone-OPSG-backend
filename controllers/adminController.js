@@ -3,10 +3,9 @@ import prisma from '../common/client.js';
 
 export const getUsers = async (req, res, next) => {
   try {
+    const { term, isAdmin, active, createdAfter, page = 1, limit = 20} = req.query
 
-    const { term, role, active, createdAfter, page = 1, limit = 20} = req.query
-
-    // bc filters are optional, Prisma query is built dynamically
+    // bc filters are optional, Prisma query built dynamically
     let where = {};
 
     if (term) {
@@ -28,11 +27,10 @@ export const getUsers = async (req, res, next) => {
       ];
     }
 
-    // adds admin role where provided
-    if (role) {
-      where.role = role;
+    // adds admin tag where provided
+    if (isAdmin) {
+      where.isAdmin = isAdmin;
     }
-
 
     if (active !== undefined) {
       where.active = active === "true";
@@ -70,28 +68,6 @@ export const getUsers = async (req, res, next) => {
 };
 
 
-// export const getAllUsers = async (req, res, next) => {
-//   try {
-//     const allUsers = await prisma.user.findMany();
-
-//     // fail and success responses
-//     if (allUsers.length === 0) {
-//       return res.status(200).json({
-//         statusCode: 200,
-//         message: "OK",
-//         data: []
-//       });
-//     }
-
-//     res.status(200).json({
-//         statusCode: 200,
-//         message: "Users sucessfully retrieved",
-//         data: allUsers
-//     })
-//   } catch (error) {
-//     next(error);
-//   }
-// };
 
 export const getUserById = async (req, res, next) => {
     const userId = req.params.userId;
