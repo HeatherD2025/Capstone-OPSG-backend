@@ -21,10 +21,8 @@ app.use(
   cors({
     // set to allow multiple origins
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
+      if (!origin || allowedOrigins.includes(origin) || origin.includes('netlify.app')) {
+        return callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
       }

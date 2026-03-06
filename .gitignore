@@ -3,3 +3,6 @@ node_modules
 .env
 generated/
 .vscode/
+
+# Local Netlify folder
+.netlify
