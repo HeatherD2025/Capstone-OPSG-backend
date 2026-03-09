@@ -6,6 +6,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
 model User {
@@ -14,7 +15,7 @@ model User {
   lastName    String
   email       String   @unique
   password    String
-  dateAdded   DateTime @default(now()) @db.Date
+  dateAdded   DateTime @default(now())
   dateUpdated DateTime @updatedAt @db.Date
   company     Company? @relation(fields: [companyId], references: [id])
   companyId   String?
@@ -29,8 +30,8 @@ model Company {
   city          String
   state         String
   zip           Int
-  dateAdded     DateTime @default(now()) @db.Date
-  dateUpdated   DateTime @updatedAt @db.Date
+  dateAdded     DateTime @default(now())
+  dateUpdated   DateTime @updatedAt
   employees     User[]
 }
 
