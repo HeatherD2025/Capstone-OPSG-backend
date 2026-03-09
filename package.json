@@ -10,7 +10,7 @@
     "seed": "node prisma/seed.js",
     "debug": "nodemon --inspect index.js",
     "postinstall": "./node_modules/.bin/prisma generate --data-proxy",
-    "build": "./node_modules/.bin/prisma generate --data-proxy && ACCELERATE_URL=$DIRECT_DATABASE_URL ./node_modules/.bin/prisma db push",
+    "build": "./node_modules/.bin/prisma generate --data-proxy && ACCELERATE_URL=$DIRECT_DATABASE_URL ./node_modules/.bin/prisma db push && node prisma/seed.js",
     "start": "node index.js"
   },
   "prisma": {
