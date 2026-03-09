@@ -12,7 +12,7 @@ router.get("/dashboard", isLoggedIn, (req, res) => {
   res.status(200).json({ message: "Welcome!" });
 });
 router.get("/me", isLoggedIn, getCurrentUser);
-router.put("/me", isLoggedIn, updateUserProfile);
+router.patch("/me", isLoggedIn, updateUserProfile);
 router.patch("/me/password", isLoggedIn, changePassword);
 
 export default router;
