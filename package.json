@@ -9,7 +9,7 @@
     "server": "nodemon index.js",
     "seed": "node prisma/seed.js",
     "debug": "nodemon --inspect index.js",
-    "build": "npx prisma generate && ACCELERATE_URL=$DIRECT_DATABASE_URL npx prisma db push",
+    "build": "./node_modules/.bin/prisma generate --data-proxy && ACCELERATE_URL=$DIRECT_DATABASE_URL ./node_modules/.bin/prisma db push",
     "start": "node index.js"
   },
   "prisma": {
