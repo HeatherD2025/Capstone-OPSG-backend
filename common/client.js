@@ -1,10 +1,12 @@
-import { PrismaClient } from '@prisma/client'
-import { withAccelerate } from '@prisma/extension-accelerate'
+import { PrismaClient } from '@prisma/client/edge'; // Note the /edge
+import { withAccelerate } from '@prisma/extension-accelerate';
 
 const prisma = new PrismaClient({
   datasources: {
-    db: { url: process.env.ACCELERATE_URL },
+    db: {
+      url: process.env.ACCELERATE_URL,
+    },
   },
 }).$extends(withAccelerate());
 
-export default prisma
+export default prisma;
