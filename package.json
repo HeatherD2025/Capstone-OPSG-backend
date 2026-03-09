@@ -9,7 +9,8 @@
     "server": "nodemon index.js",
     "seed": "node prisma/seed.js",
     "debug": "nodemon --inspect index.js",
-    "build": "PRISMA_GENERATE_DATASOURCE_URL=$DIRECT_DATABASE_URL npx prisma generate && npx prisma migrate deploy",
+    "build": "npx prisma generate --data-proxy",
+    "postinstall": "DATABASE_URL=$DIRECT_DATABASE_URL npx prisma db push",
     "start": "node index.js"
   },
   "prisma": {
