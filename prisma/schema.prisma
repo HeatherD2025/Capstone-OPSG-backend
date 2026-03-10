@@ -21,7 +21,7 @@ model User {
   companyId   String?
   isAdmin     Boolean  @default(false)
 
-  @@map("user")
+  @@map("users")
 }
 
 model Company {
@@ -36,7 +36,7 @@ model Company {
   dateUpdated   DateTime @updatedAt
   employees     User[]
 
-  @@map("company")
+  @@map("companies")
 }
 
 model Token {
@@ -47,5 +47,5 @@ model Token {
   dateAdded    DateTime @default(now())
   dateUpdated  DateTime @updatedAt
 
-  @@map("token")
+  @@map("tokens")
 }
