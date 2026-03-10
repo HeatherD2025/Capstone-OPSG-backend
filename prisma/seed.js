@@ -6,7 +6,7 @@ import { faker } from "@faker-js/faker";
 
 dotenv.config();
 
-// const prisma = new PrismaClient();
+const prisma = new PrismaClient();
 
 const DEMO_ADMIN_PASSWORD = process.env.DEMO_ADMIN_PASSWORD || "1234";
 const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD || "123";
