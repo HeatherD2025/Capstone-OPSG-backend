@@ -1,16 +1,20 @@
-import prisma from "../common/client.js";
+import { PrismaClient } from "@prisma/client";
+import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import "dotenv/config";
 import { faker } from "@faker-js/faker";
 
-const DEMO_ADMIN_PASSWORD = process.env.DEMO_ADMIN_PASSWORD;
-const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD;
+dotenv.config();
 
+const prisma = new PrismaClient();
+
+const DEMO_ADMIN_PASSWORD = process.env.DEMO_ADMIN_PASSWORD || "1234";
+const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD || "123";
 
 // Seed db with fake companies, users, and users with company relationships
 async function seed() {
   try {
+    console.log("Checking connection");
     console.log("Clearing existing data...");
     await prisma.token.deleteMany();
     await prisma.user.deleteMany();
@@ -64,12 +68,12 @@ async function seed() {
         const accessToken = jwt.sign(
           { id: user.id, email: user.email },
           process.env.ACCESS_TOKEN_SECRET,
-          { expiresIn: "15m" }
+          { expiresIn: "15m" },
         );
         const refreshToken = jwt.sign(
           { id: user.id },
           process.env.REFRESH_TOKEN_SECRET,
-          { expiresIn: "6h" }
+          { expiresIn: "6h" },
         );
 
         seededTokens.push({
@@ -98,12 +102,12 @@ async function seed() {
       const accessToken = jwt.sign(
         { id: user.id, email: user.email },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "15m" }
+        { expiresIn: "15m" },
       );
       const refreshToken = jwt.sign(
         { id: user.id },
         process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: "3d" }
+        { expiresIn: "3d" },
       );
 
       seededTokens.push({
@@ -128,12 +132,12 @@ async function seed() {
     const adminAccessToken = jwt.sign(
       { id: admin.id, email: admin.email, isAdmin: true },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "15m" }
+      { expiresIn: "15m" },
     );
     const adminRefreshToken = jwt.sign(
       { id: admin.id, email: admin.email, isAdmin: true },
       process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: "3d" }
+      { expiresIn: "3d" },
     );
 
     seededTokens.push({
@@ -169,12 +173,12 @@ async function seed() {
     const accessToken = jwt.sign(
       { id: user.id, email: user.email },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "15m" }
+      { expiresIn: "15m" },
     );
     const refreshToken = jwt.sign(
       { id: user.id },
       process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: "3d" }
+      { expiresIn: "3d" },
     );
 
     seededTokens.push({
