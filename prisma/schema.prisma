@@ -4,9 +4,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -15,13 +14,11 @@ model User {
   lastName    String
   email       String   @unique
   password    String
-  dateAdded   DateTime @default(now())
+  dateAdded   DateTime @default(now()) @db.Date
   dateUpdated DateTime @updatedAt @db.Date
   company     Company? @relation(fields: [companyId], references: [id])
   companyId   String?
   isAdmin     Boolean  @default(false)
-
-  @@map("users")
 }
 
 model Company {
@@ -32,11 +29,9 @@ model Company {
   city          String
   state         String
   zip           Int
-  dateAdded     DateTime @default(now())
-  dateUpdated   DateTime @updatedAt
+  dateAdded     DateTime @default(now()) @db.Date
+  dateUpdated   DateTime @updatedAt @db.Date
   employees     User[]
-
-  @@map("companies")
 }
 
 model Token {
@@ -46,6 +41,4 @@ model Token {
   realmId      String? // qb company ID
   dateAdded    DateTime @default(now())
   dateUpdated  DateTime @updatedAt
-
-  @@map("tokens")
 }
