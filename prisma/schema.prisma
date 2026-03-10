@@ -4,9 +4,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = "postgresql://heather_admin:npg_YBGUs57ifpLk@ep-autumn-mud-aepfendo-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require&pgbouncer=true"
-  directUrl = "postgresql://heather_admin:npg_YBGUs57ifpLk@ep-autumn-mud-aepfendo.us-east-2.aws.neon.tech/neondb?sslmode=require"
+  provider  = "postgresql"
+  url       = "postgresql://neondb_owner:npg_C1HqYDR4ObGf@ep-autumn-mud-aepfendo.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+  directUrl = "postgresql://neondb_owner:npg_C1HqYDR4ObGf@ep-autumn-mud-aepfendo.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 }
 
 model User {

@@ -32,12 +32,12 @@
     "morgan": "^1.10.0",
     "nodemon": "^3.1.10",
     "pg": "^8.15.6",
-    "prisma": "^4.16.2",
     "render": "^0.1.4"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.7.0",
     "i": "^0.3.7",
-    "npm": "^11.6.1"
+    "npm": "^11.6.1",
+    "prisma": "^4.16.2"
   }
 }

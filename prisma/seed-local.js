@@ -1,33 +1,24 @@
 import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
-import path from "path";
 
-// Manually load my local env file
-// dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
+// Load the .env file
+dotenv.config();
 
-// 1. Force the environment variable directly in the process
-process.env.SEED_DATABASE_URL =
-  "postgresql://heather_admin:npg_YBGUs57ifpLk@ep-autumn-mud-aepfendo-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require&pgbouncer=true";
-
-// 2. Initialize Prisma using that specific variable
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.SEED_DATABASE_URL,
-    },
-  },
-});
+// Initialize Prisma without manual overrides
+const prisma = new PrismaClient();
 
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { faker } from "@faker-js/faker";
 
-const DEMO_ADMIN_PASSWORD = process.env.DEMO_ADMIN_PASSWORD;
-const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD;
+// Use the environment variables or fallbacks
+const DEMO_ADMIN_PASSWORD = process.env.DEMO_ADMIN_PASSWORD || "1234";
+const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD || "123";
 
 // Seed db with fake companies, users, and users with company relationships
 async function seed() {
   try {
+    console.log("Checking URL:", prisma._activeProvider);
     console.log("Clearing existing data...");
     await prisma.token.deleteMany();
     await prisma.user.deleteMany();
