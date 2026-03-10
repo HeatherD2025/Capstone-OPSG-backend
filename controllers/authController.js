@@ -56,14 +56,14 @@ export const login = async (req, res, next) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
-
     await prisma.token.create({
       data: {
         refreshToken: refreshToken,
       }
     });
+    
+    // Remove password from response
+    const { password: _, ...userWithoutPassword } = user;
 
     res.status(200).json({
       statusCode: 200,
@@ -143,14 +143,14 @@ export const register = async (req, res, next) => {
     const accessToken = generateAccessToken(registerUser);
     const refreshToken = generateRefreshToken(registerUser);
 
-    const { password: _, ...userWithoutPassword } = registerUser;
-
     await prisma.token.create({
       data: {
         refreshToken: refreshToken,
       }
     });
 
+    const { password: _, ...userWithoutPassword } = registerUser;
+    
     return res.status(201).json({
       statusCode: 201,
       message: "Registration succesful",

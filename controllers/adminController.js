@@ -100,6 +100,7 @@ export const getUserById = async (req, res, next) => {
   }
 };
 
+
 export const deleteUserById = async (req, res, next) => {
   const { userId } = req.params;
 

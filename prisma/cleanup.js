@@ -4,26 +4,26 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function cleanupTokens() {
-    try {
-        console.log("Staring token cleanup...");
+  try {
+    console.log("Staring token cleanup...");
 
-        const threeDaysAgo = new Date();
-        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
 
-        const deleted = await prisma.token.deleteMany({
-            where: {
-                createdAt: {
-                    lt: threeDaysAgo,
-                },
-            },
-        });
+    const deleted = await prisma.token.deleteMany({
+      where: {
+        dateAdded: {
+          lt: threeDaysAgo,
+        },
+      },
+    });
 
-        console.log(`Deleted ${deleted.count} old tokens.`);
-    } catch (error) {
-        console.error("Error occurred while cleaning up tokens:", error);  
-    } finally {
-        await prisma.$disconnect();
-    }
+    console.log(`Deleted ${deleted.count} old tokens.`);
+  } catch (error) {
+    console.error("Error occurred while cleaning up tokens:", error);
+  } finally {
+    await prisma.$disconnect();
+  }
 }
 
-cleanupTokens()
+cleanupTokens();
