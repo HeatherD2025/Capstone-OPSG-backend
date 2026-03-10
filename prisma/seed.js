@@ -76,6 +76,13 @@ async function seed() {
           { expiresIn: "6h" },
         );
 
+        await prisma.token.create({
+          data: {
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+          }
+        });
+
         seededTokens.push({
           email: user.email,
           accessToken,
@@ -110,6 +117,13 @@ async function seed() {
         { expiresIn: "3d" },
       );
 
+      await prisma.token.create({
+        data: {
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+        }
+      });
+
       seededTokens.push({
         email: user.email,
         accessToken,
@@ -139,6 +153,13 @@ async function seed() {
       process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: "3d" },
     );
+
+    await prisma.token.create({
+      data: {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      }
+    });
 
     seededTokens.push({
       email: admin.email,
@@ -181,6 +202,13 @@ async function seed() {
       { expiresIn: "3d" },
     );
 
+    await prisma.token.create({
+      data: {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      }
+    });
+    
     seededTokens.push({
       email: user.email,
       accessToken,

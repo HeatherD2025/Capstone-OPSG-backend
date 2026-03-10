@@ -59,6 +59,12 @@ export const login = async (req, res, next) => {
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user;
 
+    await prisma.token.create({
+      data: {
+        refreshToken: refreshToken,
+      }
+    });
+
     res.status(200).json({
       statusCode: 200,
       message: "Login successful",
@@ -73,6 +79,34 @@ export const login = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const logout = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(400).json({
+        statusCode: 400,
+        message: "Refresh token required",
+      });
+    }
+
+    // Delete the token from the database
+    await prisma.token.deleteMany({
+      where: { refreshToken },
+    });
+
+    res.status(200).json({
+      statusCode: 200,
+      message: "Logout successful",
+    });
+  } catch (error) {
+    console.error("Logout error", error);
+    next(error);
+  }
+};
+
 
 export const register = async (req, res, next) => {
   try {
@@ -110,6 +144,12 @@ export const register = async (req, res, next) => {
     const refreshToken = generateRefreshToken(registerUser);
 
     const { password: _, ...userWithoutPassword } = registerUser;
+
+    await prisma.token.create({
+      data: {
+        refreshToken: refreshToken,
+      }
+    });
 
     return res.status(201).json({
       statusCode: 201,
